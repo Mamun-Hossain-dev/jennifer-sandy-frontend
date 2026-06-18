@@ -17,9 +17,12 @@ interface MapComponentProps {
   zoom?: number
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GoogleAny = any
+
 declare global {
   interface Window {
-    google?: any
+    google?: GoogleAny
   }
 }
 
@@ -69,8 +72,11 @@ export default function MapComponent({
   zoom = 13,
 }: MapComponentProps) {
   const mapRef = useRef<HTMLDivElement>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapInstanceRef = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef = useRef<any[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const infoWindowRef = useRef<any>(null)
   const [mapError, setMapError] = useState<string | null>(null)
   const [isMapReady, setIsMapReady] = useState(false)
@@ -120,7 +126,8 @@ export default function MapComponent({
 
     const bounds = new window.google.maps.LatLngBounds()
     const validApartments = apartments.filter(
-      apartment => Number.isFinite(apartment.lat) && Number.isFinite(apartment.lng),
+      apartment =>
+        Number.isFinite(apartment.lat) && Number.isFinite(apartment.lng),
     )
 
     validApartments.forEach(apartment => {
