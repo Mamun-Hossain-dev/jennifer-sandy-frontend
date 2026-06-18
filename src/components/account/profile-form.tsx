@@ -15,6 +15,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { fetchMyProfile, updateMyProfile } from '@/lib/dashboard-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { broadcastProfileUpdate } from '@/components/shared/profile-update-broadcast'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const profileSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -34,6 +36,14 @@ export function ProfileForm() {
   const { data: session } = useSession()
   const token = session?.user?.accessToken
   const queryClient = useQueryClient()
+  const profileUpdatedMessage = useTranslatedText(
+    'Profile updated successfully',
+    'en',
+    { cacheKey: 'profile:toast:success' },
+  )
+  const updateFailedMessage = useTranslatedText('Update failed', 'en', {
+    cacheKey: 'profile:toast:error',
+  })
 
   const profileQuery = useQuery({
     queryKey: ['my-profile'],
@@ -91,12 +101,12 @@ export function ProfileForm() {
       })
     },
     onSuccess: async response => {
-      toast.success(response.message || 'Profile updated successfully')
+      toast.success(response.message || profileUpdatedMessage)
       await queryClient.invalidateQueries({ queryKey: ['my-profile'] })
       broadcastProfileUpdate()
     },
     onError: error => {
-      toast.error(getApiErrorMessage(error, 'Update failed'))
+      toast.error(getApiErrorMessage(error, updateFailedMessage))
     },
   })
 
@@ -125,10 +135,16 @@ export function ProfileForm() {
     <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
       <div>
         <h4 className="text-xl font-semibold leading-[120%] text-[#343A40] md:text-2xl">
-          Personal Information
+          <TranslatedText
+            text="Personal Information"
+            cacheKey="profile:title"
+          />
         </h4>
         <p className="pt-3 text-base font-normal leading-[120%] text-[#68706A]">
-          Manage your personal information and profile details.
+          <TranslatedText
+            text="Manage your personal information and profile details."
+            cacheKey="profile:subtitle"
+          />
         </p>
       </div>
 
@@ -137,7 +153,7 @@ export function ProfileForm() {
           {/* Gender */}
           <div className="space-y-3">
             <Label className="text-base font-medium leading-[120%] text-[#3B4759]">
-              Gender
+              <TranslatedText text="Gender" cacheKey="profile:gender" />
             </Label>
             <div className="flex items-center gap-8">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -151,7 +167,9 @@ export function ProfileForm() {
                   }
                   className="h-4 w-4 accent-[#2563EB]"
                 />
-                <span className="text-sm font-normal text-gray-700">Male</span>
+                <span className="text-sm font-normal text-gray-700">
+                  <TranslatedText text="Male" cacheKey="profile:male" />
+                </span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -165,7 +183,7 @@ export function ProfileForm() {
                   className="h-4 w-4 accent-[#2563EB]"
                 />
                 <span className="text-sm font-normal text-gray-700">
-                  Female
+                  <TranslatedText text="Female" cacheKey="profile:female" />
                 </span>
               </label>
             </div>
@@ -175,9 +193,9 @@ export function ProfileForm() {
             <div className="space-y-2">
               <Label
                 htmlFor="firstName"
-                className="text-base font-medium leading-[120%] text-[#3B4759]"
-              >
-                First Name
+              className="text-base font-medium leading-[120%] text-[#3B4759]"
+            >
+                <TranslatedText text="First Name" cacheKey="profile:first" />
               </Label>
               <Input
                 id="firstName"
@@ -195,9 +213,9 @@ export function ProfileForm() {
             <div className="space-y-2">
               <Label
                 htmlFor="lastName"
-                className="text-base font-medium leading-[120%] text-[#3B4759]"
-              >
-                Last Name
+              className="text-base font-medium leading-[120%] text-[#3B4759]"
+            >
+                <TranslatedText text="Last Name" cacheKey="profile:last" />
               </Label>
               <Input
                 id="lastName"
@@ -213,12 +231,15 @@ export function ProfileForm() {
             </div>
 
             <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-base font-medium leading-[120%] text-[#3B4759]"
-              >
-                Email Address
-              </Label>
+            <Label
+              htmlFor="email"
+              className="text-base font-medium leading-[120%] text-[#3B4759]"
+            >
+              <TranslatedText
+                text="Email Address"
+                cacheKey="profile:email"
+              />
+            </Label>
               <Input
                 id="email"
                 type="email"
@@ -230,12 +251,15 @@ export function ProfileForm() {
             </div>
 
             <div className="space-y-2">
-              <Label
-                htmlFor="phoneNumber"
-                className="text-base font-medium leading-[120%] text-[#3B4759]"
-              >
-                Phone Number
-              </Label>
+            <Label
+              htmlFor="phoneNumber"
+              className="text-base font-medium leading-[120%] text-[#3B4759]"
+            >
+              <TranslatedText
+                text="Phone Number"
+                cacheKey="profile:phone"
+              />
+            </Label>
               <Input
                 id="phoneNumber"
                 {...form.register('phoneNumber')}
@@ -251,7 +275,7 @@ export function ProfileForm() {
               htmlFor="bio"
               className="text-base font-medium leading-[120%] text-[#3B4759]"
             >
-              Bio
+              <TranslatedText text="Bio" cacheKey="profile:bio" />
             </Label>
             <Textarea
               id="bio"
@@ -267,7 +291,10 @@ export function ProfileForm() {
               htmlFor="streetAddress"
               className="text-base font-medium leading-[120%] text-[#3B4759]"
             >
-              Street Address
+              <TranslatedText
+                text="Street Address"
+                cacheKey="profile:street"
+              />
             </Label>
             <Input
               id="streetAddress"
@@ -281,10 +308,10 @@ export function ProfileForm() {
             <div className="space-y-2">
               <Label
                 htmlFor="location"
-                className="text-base font-medium leading-[120%] text-[#3B4759]"
-              >
-                Location
-              </Label>
+              className="text-base font-medium leading-[120%] text-[#3B4759]"
+            >
+              <TranslatedText text="Location" cacheKey="profile:location" />
+            </Label>
               <Input
                 id="location"
                 {...form.register('location')}
@@ -296,10 +323,13 @@ export function ProfileForm() {
             <div className="space-y-2">
               <Label
                 htmlFor="postalCode"
-                className="text-base font-medium leading-[120%] text-[#3B4759]"
-              >
-                Postal Code
-              </Label>
+              className="text-base font-medium leading-[120%] text-[#3B4759]"
+            >
+              <TranslatedText
+                text="Postal Code"
+                cacheKey="profile:postal"
+              />
+            </Label>
               <Input
                 id="postalCode"
                 {...form.register('postalCode')}
@@ -316,14 +346,27 @@ export function ProfileForm() {
               onClick={handleDiscard}
               className="h-[47px] rounded-md border border-[#E5102E] px-6 py-4 text-sm font-medium leading-[120%] text-[#E5102E]"
             >
-              Discard Changes
+              <TranslatedText
+                text="Discard Changes"
+                cacheKey="profile:discard"
+              />
             </Button>
             <Button
               type="submit"
               disabled={updateMutation.isPending}
               className="h-[47px] rounded-md bg-[#2563EB] px-6 py-4 text-sm font-medium leading-[120%] text-white hover:bg-[#1d4ed8]"
             >
-              {updateMutation.isPending ? 'Updating...' : 'Save Changes'}
+              {updateMutation.isPending ? (
+                <TranslatedText
+                  text="Updating..."
+                  cacheKey="profile:loading"
+                />
+              ) : (
+                <TranslatedText
+                  text="Save Changes"
+                  cacheKey="profile:save"
+                />
+              )}
             </Button>
           </div>
         </form>

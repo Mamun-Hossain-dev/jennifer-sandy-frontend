@@ -1,6 +1,14 @@
 'use client'
 
-import { Fragment, useDeferredValue, useEffect, useMemo, useState } from 'react'
+import {
+  Fragment,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react'
 import { FaqAccordion, FaqItem } from '@/components/shared/faq-accordion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -33,6 +41,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { useTranslatedText } from '@/hooks/use-translated-text'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const MapComponent = dynamic(() => import('./MapComponent'), {
   ssr: false,
@@ -102,9 +118,27 @@ function ApartmentCardSkeleton() {
   )
 }
 
+function TranslatedApartmentField({
+  apartmentId,
+  field,
+  text,
+}: {
+  apartmentId: string
+  field: string
+  text: string
+}) {
+  return (
+    <>
+      {useTranslatedText(text, 'de', {
+        cacheKey: `apartment:${apartmentId}:${field}`,
+      })}
+    </>
+  )
+}
+
 function MapViewSkeleton() {
   return (
-    <div className="flex h-[680px] flex-col gap-6 lg:flex-row">
+    <div className="flex flex-col gap-6 lg:h-[680px] lg:flex-row">
       <div className="w-full space-y-4 lg:w-[360px]">
         {Array.from({ length: 4 }).map((_, index) => (
           <div
@@ -125,6 +159,209 @@ function MapViewSkeleton() {
   )
 }
 
+type FilterPanelProps = {
+  draftDistricts: string[]
+  setDraftDistricts: Dispatch<SetStateAction<string[]>>
+  draftRooms: string[]
+  setDraftRooms: Dispatch<SetStateAction<string[]>>
+  draftAmenities: string[]
+  setDraftAmenities: Dispatch<SetStateAction<string[]>>
+  draftDate: string
+  setDraftDate: Dispatch<SetStateAction<string>>
+  draftMaxPrice: number
+  setDraftMaxPrice: Dispatch<SetStateAction<number>>
+  onApply: () => void
+}
+
+function FilterPanel({
+  draftDistricts,
+  setDraftDistricts,
+  draftRooms,
+  setDraftRooms,
+  draftAmenities,
+  setDraftAmenities,
+  draftDate,
+  setDraftDate,
+  draftMaxPrice,
+  setDraftMaxPrice,
+  onApply,
+}: FilterPanelProps) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h4 className="mb-2.5 flex items-center gap-2 text-sm font-semibold text-slate-800">
+          <Calendar className="h-4 w-4 text-slate-400" />
+          <TranslatedText
+            text="Available from"
+            cacheKey="apartments:filters:available-from"
+          />
+        </h4>
+        <input
+          type="date"
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1672E6]/20"
+          value={draftDate}
+          onChange={e => setDraftDate(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <h4 className="mb-2 text-sm font-semibold text-slate-800">
+          <TranslatedText
+            text="District"
+            cacheKey="apartments:filters:district"
+          />
+        </h4>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {draftDistricts.map(d => (
+            <span
+              key={d}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#EAF3FF] px-3 py-1.5 text-xs font-semibold text-[#1672E6]"
+            >
+              {d}
+              <button
+                type="button"
+                onClick={() =>
+                  setDraftDistricts(prev => prev.filter(x => x !== d))
+                }
+                className="ml-0.5 text-sm font-bold hover:text-red-500"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+          <button
+            type="button"
+            onClick={() => setDraftDistricts([])}
+            className="mt-1 text-xs font-bold text-[#1672E6] hover:underline"
+          >
+            {draftDistricts.length === 0 ? (
+              <TranslatedText
+                text="All districts"
+                cacheKey="apartments:filters:all-districts"
+              />
+            ) : (
+              <TranslatedText text="Clear" cacheKey="apartments:filters:clear" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="mb-2.5 text-sm font-semibold text-slate-800">
+          <TranslatedText text="Rooms" cacheKey="apartments:filters:rooms" />
+        </h4>
+        <div className="flex flex-wrap gap-4">
+          {['1', '2', '3', '4+'].map(r => (
+            <label
+              key={r}
+              className="flex cursor-pointer select-none items-center gap-2"
+            >
+              <input
+                type="checkbox"
+                checked={draftRooms.includes(r)}
+                onChange={() =>
+                  setDraftRooms(prev =>
+                    prev.includes(r)
+                      ? prev.filter(x => x !== r)
+                      : [...prev, r],
+                  )
+                }
+                className="h-4 w-4 rounded border-slate-300 text-[#1672E6] focus:ring-[#1672E6]"
+              />
+              <span className="text-sm font-semibold text-slate-600">
+                [{r}]
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h4 className="mb-2 text-sm font-semibold text-slate-800">
+          <TranslatedText text="Price" cacheKey="apartments:filters:price" />
+        </h4>
+        <div className="mt-2 space-y-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setDraftMaxPrice(prev => Math.max(500, prev - 100))}
+              className="px-1 text-lg font-bold text-slate-400 hover:text-slate-600"
+            >
+              -
+            </button>
+            <input
+              type="range"
+              min={500}
+              max={3000}
+              value={draftMaxPrice}
+              onChange={e => setDraftMaxPrice(Number(e.target.value))}
+              className="h-1.5 w-full cursor-pointer rounded-lg bg-slate-200 accent-[#1672E6]"
+            />
+            <button
+              type="button"
+              onClick={() => setDraftMaxPrice(prev => Math.min(3000, prev + 100))}
+              className="px-1 text-lg font-bold text-slate-400 hover:text-slate-600"
+            >
+              +
+            </button>
+          </div>
+          <div className="flex justify-between text-xs font-semibold text-slate-500">
+            <span>500 €</span>
+            <span className="font-bold text-[#1672E6]">
+              {draftMaxPrice === 3000 ? '3.000 €+' : `${draftMaxPrice} €`}
+            </span>
+            <span>3.000 €+</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="mb-3 text-sm font-semibold text-slate-800">
+          <TranslatedText
+            text="Amenities"
+            cacheKey="apartments:filters:amenities"
+          />
+        </h4>
+        <div className="max-h-[280px] space-y-2 overflow-y-auto pr-1">
+          {allAmenities.map(amenity => (
+            <label
+              key={amenity}
+              className="flex cursor-pointer select-none items-center gap-3 py-0.5"
+            >
+              <input
+                type="checkbox"
+                checked={draftAmenities.includes(amenity)}
+                onChange={() =>
+                  setDraftAmenities(prev =>
+                    prev.includes(amenity)
+                      ? prev.filter(a => a !== amenity)
+                      : [...prev, amenity],
+                  )
+                }
+                className="h-4 w-4 rounded border-slate-300 text-[#1672E6] focus:ring-[#1672E6]"
+              />
+              <span className="text-sm font-medium text-slate-600">
+                {amenity}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onApply}
+        className="w-full rounded-xl bg-[#1672E6] py-3.5 text-sm font-bold text-white shadow-sm transition-all duration-200 active:scale-[0.98] hover:bg-[#0f63ce]"
+      >
+        <TranslatedText
+          text="Apply filters"
+          cacheKey="apartments:filters:apply"
+        />
+      </button>
+    </div>
+  )
+}
+
 interface ApartmentsPageContentProps {
   initialFilters?: {
     availableFrom?: string
@@ -141,7 +378,11 @@ export function ApartmentsPageContent({
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchText, setSearchText] = useState(initialFilters?.searchTerm ?? '')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const deferredSearchText = useDeferredValue(searchText)
+  const searchPlaceholder = useTranslatedText('e.g. Media Harbour', 'en', {
+    cacheKey: 'apartments:search:placeholder',
+  })
 
   // ——— Draft states (sidebar controls) ———
   const [draftDistricts, setDraftDistricts] = useState<string[]>(
@@ -279,7 +520,6 @@ export function ApartmentsPageContent({
     return Array.from(new Set([...fromAreas, ...fromApartments]))
   }, [data?.apartments, popularAreas])
 
-  const appliedDistrictLabel = appliedDistricts[0] || 'District'
   const sortLabel =
     {
       popularity: 'popularity',
@@ -317,18 +557,28 @@ export function ApartmentsPageContent({
     setIsPriceApplied(draftMaxPrice < 3000)
   }
 
+  function applyFiltersAndClose() {
+    applyFilters()
+    setFiltersOpen(false)
+  }
+
   return (
     <main className="pb-16 pt-6 font-manrope bg-[#F9FBFC] min-h-screen">
       {/* SEARCH BAR */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-10 mb-8">
-        <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 p-3 flex flex-col md:flex-row items-center gap-4 w-full">
+      <section className="container mx-auto mb-8 px-4 sm:px-6 lg:px-10">
+        <div className="flex w-full flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] md:flex-row md:items-center">
           <div className="flex items-center gap-2 px-4 py-2 border-b md:border-b-0 md:border-r border-slate-200 w-full md:w-auto shrink-0">
             <MapPin className="h-5 w-5 text-slate-400" />
             <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex min-w-[150px] items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-sm font-semibold text-slate-700 outline-none transition-colors hover:bg-slate-50 focus:bg-slate-50">
-                <span className="max-w-[180px] truncate">
-                  {appliedDistrictLabel}
-                </span>
+                <DropdownMenuTrigger className="inline-flex min-w-[150px] items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-sm font-semibold text-slate-700 outline-none transition-colors hover:bg-slate-50 focus:bg-slate-50">
+                  <span className="max-w-[180px] truncate">
+                    {appliedDistricts[0] || (
+                      <TranslatedText
+                        text="District"
+                        cacheKey="apartments:search:district-placeholder"
+                      />
+                    )}
+                  </span>
                 <ChevronDown className="h-4 w-4 text-slate-400" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="max-h-72 min-w-[220px] rounded-xl border border-slate-100 bg-white p-1 shadow-xl">
@@ -339,7 +589,10 @@ export function ApartmentsPageContent({
                   }}
                   className="cursor-pointer justify-between rounded-lg px-3 py-2 text-sm font-medium"
                 >
-                  District
+                  <TranslatedText
+                    text="District"
+                    cacheKey="apartments:search:district"
+                  />
                   {appliedDistricts.length === 0 && (
                     <Check className="h-4 w-4 text-[#1672E6]" />
                   )}
@@ -362,202 +615,107 @@ export function ApartmentsPageContent({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex-1 flex items-center gap-2 px-2 w-full">
-            <input
+          <div className="flex w-full flex-1 items-center gap-2 px-2">
+              <input
               type="text"
-              placeholder="e.g. Media Harbour"
+              placeholder={searchPlaceholder}
               className="w-full text-slate-700 placeholder-slate-400 bg-transparent focus:outline-none py-2 font-medium"
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
             />
           </div>
-          <button className="bg-[#1672E6] hover:bg-[#0f63ce] text-white px-8 py-3.5 rounded-xl font-semibold flex items-center gap-2 shadow-sm transition-all duration-200 shrink-0 w-full md:w-auto justify-center">
+          <button className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1672E6] px-8 py-3.5 font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#0f63ce] md:w-auto">
             <Search className="h-5 w-5" />
-            Search
+            <TranslatedText text="Search" cacheKey="apartments:search:button" />
           </button>
         </div>
       </section>
 
       {/* FILTERS + RESULTS */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-10">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* SIDEBAR FILTER */}
-          <aside className="w-full lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:w-80 lg:overflow-y-auto bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6 shrink-0">
-            <div className="space-y-6">
-              {/* Available from */}
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 mb-2.5 flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-slate-400" /> Available from
-                </h4>
-                <input
-                  type="date"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1672E6]/20"
-                  value={draftDate}
-                  onChange={e => setDraftDate(e.target.value)}
-                />
-              </div>
-
-              {/* District badges — only draft */}
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 mb-2">
-                  District
-                </h4>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {draftDistricts.map(d => (
-                    <span
-                      key={d}
-                      className="inline-flex items-center gap-1.5 bg-[#EAF3FF] text-[#1672E6] text-xs font-semibold px-3 py-1.5 rounded-full"
-                    >
-                      {d}
-                      <button
-                        onClick={() =>
-                          setDraftDistricts(prev => prev.filter(x => x !== d))
-                        }
-                        className="hover:text-red-500 font-bold ml-0.5 text-sm"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setDraftDistricts([])}
-                    className="text-xs text-[#1672E6] font-bold hover:underline mt-1"
-                  >
-                    {draftDistricts.length === 0 ? 'All districts' : 'Clear'}
-                  </button>
-                </div>
-              </div>
-
-              {/* Rooms */}
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 mb-2.5">
-                  Rooms
-                </h4>
-                <div className="flex items-center gap-4">
-                  {['1', '2', '3', '4+'].map(r => (
-                    <label
-                      key={r}
-                      className="flex items-center gap-2 cursor-pointer select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={draftRooms.includes(r)}
-                        onChange={() =>
-                          setDraftRooms(prev =>
-                            prev.includes(r)
-                              ? prev.filter(x => x !== r)
-                              : [...prev, r],
-                          )
-                        }
-                        className="rounded border-slate-300 text-[#1672E6] focus:ring-[#1672E6] h-4 w-4"
-                      />
-                      <span className="text-sm text-slate-600 font-semibold">
-                        [{r}]
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price */}
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 mb-2">
-                  Price
-                </h4>
-                <div className="mt-2 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() =>
-                        setDraftMaxPrice(prev => Math.max(500, prev - 100))
-                      }
-                      className="text-slate-400 hover:text-slate-600 text-lg font-bold px-1"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="range"
-                      min={500}
-                      max={3000}
-                      value={draftMaxPrice}
-                      onChange={e => setDraftMaxPrice(Number(e.target.value))}
-                      className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1672E6]"
-                    />
-                    <button
-                      onClick={() =>
-                        setDraftMaxPrice(prev => Math.min(3000, prev + 100))
-                      }
-                      className="text-slate-400 hover:text-slate-600 text-lg font-bold px-1"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div className="flex justify-between text-xs font-semibold text-slate-500">
-                    <span>500 €</span>
-                    <span className="text-[#1672E6] font-bold text-sm">
-                      {draftMaxPrice === 3000
-                        ? '3.000 €+'
-                        : `${draftMaxPrice} €`}
-                    </span>
-                    <span>3.000 €+</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Amenities */}
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 mb-3">
-                  Amenities
-                </h4>
-                <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
-                  {allAmenities.map(amenity => (
-                    <label
-                      key={amenity}
-                      className="flex items-center gap-3 cursor-pointer py-0.5 select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={draftAmenities.includes(amenity)}
-                        onChange={() =>
-                          setDraftAmenities(prev =>
-                            prev.includes(amenity)
-                              ? prev.filter(a => a !== amenity)
-                              : [...prev, amenity],
-                          )
-                        }
-                        className="rounded border-slate-300 text-[#1672E6] focus:ring-[#1672E6] h-4 w-4"
-                      />
-                      <span className="text-sm text-slate-600 font-medium">
-                        {amenity}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+          <div className="lg:hidden">
+            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
               <button
                 type="button"
-                onClick={applyFilters}
-                className="w-full bg-[#1672E6] hover:bg-[#0f63ce] text-white text-sm font-bold py-3.5 rounded-xl shadow-sm transition-all duration-200 active:scale-[0.98]"
+                onClick={() => setFiltersOpen(true)}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm"
               >
-                Apply filters
+                <List className="h-4 w-4" />
+                <TranslatedText text="Filters" cacheKey="apartments:filters:button" />
               </button>
-            </div>
+              <SheetContent side="left" className="w-[92vw] max-w-sm overflow-y-auto px-0">
+                <div className="px-5 pb-6 pt-4">
+                  <SheetHeader className="px-0 pb-4">
+                    <SheetTitle className="text-[#1672E6]">
+                      <TranslatedText
+                        text="Filter apartments"
+                        cacheKey="apartments:filters:title"
+                      />
+                    </SheetTitle>
+                  </SheetHeader>
+                  <FilterPanel
+                    draftDistricts={draftDistricts}
+                    setDraftDistricts={setDraftDistricts}
+                    draftRooms={draftRooms}
+                    setDraftRooms={setDraftRooms}
+                    draftAmenities={draftAmenities}
+                    setDraftAmenities={setDraftAmenities}
+                    draftDate={draftDate}
+                    setDraftDate={setDraftDate}
+                    draftMaxPrice={draftMaxPrice}
+                    setDraftMaxPrice={setDraftMaxPrice}
+                    onApply={applyFiltersAndClose}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* SIDEBAR FILTER */}
+          <aside className="hidden w-full shrink-0 rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] lg:sticky lg:top-24 lg:block lg:max-h-[calc(100vh-7rem)] lg:w-80 lg:overflow-y-auto">
+            <FilterPanel
+              draftDistricts={draftDistricts}
+              setDraftDistricts={setDraftDistricts}
+              draftRooms={draftRooms}
+              setDraftRooms={setDraftRooms}
+              draftAmenities={draftAmenities}
+              setDraftAmenities={setDraftAmenities}
+              draftDate={draftDate}
+              setDraftDate={setDraftDate}
+              draftMaxPrice={draftMaxPrice}
+              setDraftMaxPrice={setDraftMaxPrice}
+              onApply={applyFilters}
+            />
           </aside>
 
           {/* MAIN RESULTS */}
           <div className="flex-1 w-full">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <h2 className="font-serif text-[#1672E6] text-2xl md:text-3xl font-bold">
-                {filteredApartments.length} results in{' '}
-                {searchText || 'Düsseldorf'}
+            <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <h2 className="font-serif text-2xl font-bold text-[#1672E6] md:text-3xl">
+                {filteredApartments.length}{' '}
+                <TranslatedText text="results in" cacheKey="apartments:results:in" />{' '}
+                {searchText || (
+                  <TranslatedText
+                    text="Düsseldorf"
+                    cacheKey="apartments:results:city"
+                  />
+                )}
               </h2>
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-                  <span>Sort by</span>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
+                <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <span>
+                    <TranslatedText
+                      text="Sort by"
+                      cacheKey="apartments:sort:label"
+                    />
+                  </span>
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-slate-800 outline-none transition-colors hover:bg-white focus:bg-white">
-                      {sortLabel}{' '}
+              <DropdownMenuTrigger className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-slate-800 outline-none transition-colors hover:bg-white focus:bg-white">
+                      <TranslatedText
+                        text={sortLabel}
+                        cacheKey={`apartments:sort:${sortLabel}`}
+                      />{' '}
                       <ChevronDown className="h-4 w-4 text-slate-400" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -574,7 +732,10 @@ export function ApartmentsPageContent({
                           onClick={() => setSortBy(value)}
                           className="cursor-pointer justify-between rounded-lg px-3 py-2 text-sm font-medium"
                         >
-                          {label}
+                          <TranslatedText
+                            text={label}
+                            cacheKey={`apartments:sort:${label}`}
+                          />
                           {sortBy === value && (
                             <Check className="h-4 w-4 text-[#1672E6]" />
                           )}
@@ -586,15 +747,17 @@ export function ApartmentsPageContent({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-200 border border-slate-200 shadow-sm ${viewMode === 'list' ? 'bg-[#1672E6] text-white border-[#1672E6]' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                    className={`flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold shadow-sm transition-all duration-200 ${viewMode === 'list' ? 'border-[#1672E6] bg-[#1672E6] text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
                   >
-                    <List className="h-4 w-4" /> List
+                    <List className="h-4 w-4" />{' '}
+                    <TranslatedText text="List" cacheKey="apartments:view:list" />
                   </button>
                   <button
                     onClick={() => setViewMode('map')}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-200 border border-slate-200 shadow-sm ${viewMode === 'map' ? 'bg-[#1672E6] text-white border-[#1672E6]' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                    className={`flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold shadow-sm transition-all duration-200 ${viewMode === 'map' ? 'border-[#1672E6] bg-[#1672E6] text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
                   >
-                    <Map className="h-4 w-4" /> Map
+                    <Map className="h-4 w-4" />{' '}
+                    <TranslatedText text="Map" cacheKey="apartments:view:map" />
                   </button>
                 </div>
               </div>
@@ -613,23 +776,35 @@ export function ApartmentsPageContent({
             ) : isError ? (
               <div className="rounded-2xl border border-red-100 bg-white p-10 text-center">
                 <p className="text-base font-semibold text-slate-800">
-                  Unable to load apartments
+                  <TranslatedText
+                    text="Unable to load apartments"
+                    cacheKey="apartments:error:title"
+                  />
                 </p>
                 <p className="mt-2 text-sm text-slate-500">
-                  Please check the API connection and try again.
+                  <TranslatedText
+                    text="Please check the API connection and try again."
+                    cacheKey="apartments:error:subtitle"
+                  />
                 </p>
               </div>
             ) : filteredApartments.length === 0 ? (
               <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center">
                 <p className="text-base font-semibold text-slate-800">
-                  No apartments found
+                  <TranslatedText
+                    text="No apartments found"
+                    cacheKey="apartments:empty:title"
+                  />
                 </p>
                 <p className="mt-2 text-sm text-slate-500">
-                  Try changing your filters.
+                  <TranslatedText
+                    text="Try changing your filters."
+                    cacheKey="apartments:empty:subtitle"
+                  />
                 </p>
               </div>
             ) : viewMode === 'list' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {filteredApartments.map(apt => (
                   <div
                     key={apt.id}
@@ -646,29 +821,60 @@ export function ApartmentsPageContent({
                     <div className="p-6 flex flex-col flex-1 justify-between">
                       <div>
                         <h3 className="font-sans font-semibold text-slate-800 text-lg mb-1 leading-snug group-hover:text-[#1672E6] transition-colors">
-                          {apt.title}
+                          <TranslatedApartmentField
+                            apartmentId={apt.id}
+                            field="title"
+                            text={apt.title}
+                          />
                         </h3>
                         <p className="text-xs text-slate-400 font-semibold tracking-wide uppercase mb-3">
-                          {apt.size} m² | {apt.rooms} Rooms |{' '}
-                          {apt.hasBalcony ? 'Balcony' : 'No Balcony'}
+                          {apt.size} m² | {apt.rooms}{' '}
+                          <TranslatedText
+                            text="Rooms"
+                            cacheKey="apartments:card:rooms"
+                          />{' '}
+                          |{' '}
+                          {apt.hasBalcony ? (
+                            <TranslatedText
+                              text="Balcony"
+                              cacheKey="apartments:card:balcony"
+                            />
+                          ) : (
+                            <TranslatedText
+                              text="No Balcony"
+                              cacheKey="apartments:card:no-balcony"
+                            />
+                          )}
                         </p>
                         <p className="text-[#1672E6] font-bold text-xl mb-4">
                           {apt.price} €{' '}
                           <span className="text-xs text-slate-400 font-semibold">
-                            / Month
+                            <TranslatedText
+                              text="/ Month"
+                              cacheKey="apartments:card:month"
+                            />
                           </span>
                         </p>
                       </div>
                       <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
                           <CircleCheck className="h-4 w-4 text-[#22C55E]" />
-                          <span>Available from {apt.availableFrom}</span>
+                          <span>
+                            <TranslatedText
+                              text="Available from"
+                              cacheKey="apartments:card:available"
+                            />{' '}
+                            {apt.availableFrom}
+                          </span>
                         </div>
                         <Link
                           href={`/apartments/${apt.id}`}
                           className="border-2 border-[#1672E6] text-[#1672E6] hover:bg-[#1672E6] hover:text-white text-xs font-bold px-4 py-2 rounded-xl transition-all duration-200"
                         >
-                          Details
+                          <TranslatedText
+                            text="Details"
+                            cacheKey="apartments:card:details"
+                          />
                         </Link>
                       </div>
                     </div>
@@ -676,7 +882,7 @@ export function ApartmentsPageContent({
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col lg:flex-row gap-6 h-[680px]">
+              <div className="flex flex-col gap-6 lg:h-[680px] lg:flex-row">
                 <div className="w-full lg:w-[360px] overflow-y-auto pr-2 space-y-4 max-h-full shrink-0">
                   {filteredApartments.map(apt => (
                     <Link
@@ -694,10 +900,18 @@ export function ApartmentsPageContent({
                       </div>
                       <div className="flex flex-col justify-between py-0.5 flex-1 min-w-0">
                         <h4 className="font-sans font-semibold text-slate-800 text-sm truncate group-hover:text-[#1672E6] transition-colors">
-                          {apt.title}
+                          <TranslatedApartmentField
+                            apartmentId={apt.id}
+                            field="title"
+                            text={apt.title}
+                          />
                         </h4>
                         <p className="text-xs text-slate-400 font-bold">
-                          {apt.size} m² | {apt.rooms} Rooms
+                          {apt.size} m² | {apt.rooms}{' '}
+                          <TranslatedText
+                            text="Rooms"
+                            cacheKey="apartments:card:rooms"
+                          />
                         </p>
                         <p className="text-[#1672E6] font-bold text-sm">
                           {apt.price} €
@@ -714,9 +928,17 @@ export function ApartmentsPageContent({
 
             {!isLoading && !isFetching && !isError && totalPages > 1 && (
               <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] sm:flex-row">
-                <p className="text-sm font-medium text-slate-500">
-                  Showing {showingStart} to {showingEnd} of {totalItems}{' '}
-                  apartments
+              <p className="text-sm font-medium text-slate-500">
+                  <TranslatedText text="Showing" cacheKey="apartments:paging:showing" />{' '}
+                  {showingStart}{' '}
+                  <TranslatedText text="to" cacheKey="apartments:paging:to" />{' '}
+                  {showingEnd}{' '}
+                  <TranslatedText text="of" cacheKey="apartments:paging:of" />{' '}
+                  {totalItems}{' '}
+                  <TranslatedText
+                    text="apartments"
+                    cacheKey="apartments:paging:apartments"
+                  />
                 </p>
                 <Pagination className="mx-0 w-auto">
                   <PaginationContent>
@@ -787,33 +1009,41 @@ export function ApartmentsPageContent({
       </section>
 
       {/* BOTTOM BANNER */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-10 mt-20">
+      <section className="container mx-auto mt-20 px-4 sm:px-6 lg:px-10">
         <div className="relative overflow-hidden rounded-[20px]">
           <Image
             src="/images/banner.jpg"
             alt="Explore homes banner"
             width={1600}
             height={650}
-            className="h-[420px] w-full object-cover"
+            className="h-[320px] w-full object-cover sm:h-[380px] lg:h-[420px]"
           />
           <div className="absolute inset-0 bg-black/35" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center text-white">
-            <h3 className="font-serif font-bold text-3xl md:text-[40px] leading-[150%]">
-              Find <span className="text-[#1672E6]">Your Perfect</span> Home
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white sm:px-8 lg:px-10">
+            <h3 className="font-serif text-3xl font-bold leading-[150%] md:text-[40px]">
+              <TranslatedText
+                text="Find Your Perfect Home"
+                cacheKey="apartments:banner:title"
+              />
             </h3>
-            <p className="mt-4 max-w-3xl text-sm md:text-base leading-relaxed text-white/95">
-              Easily search, compare, and connect with professionally managed
-              apartments and homes.
+            <p className="mt-4 max-w-3xl text-balance text-sm leading-relaxed text-white/95 md:text-base">
+              <TranslatedText
+                text="Easily search, compare, and connect with professionally managed apartments and homes."
+                cacheKey="apartments:banner:subtitle"
+              />
             </p>
-            <button className="mt-8 rounded-lg bg-[#1672E6] px-8 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0f63ce] hover:shadow-lg active:translate-y-px active:scale-[0.98]">
-              Explore Houses
+            <button className="mt-8 rounded-lg bg-[#1672E6] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0f63ce] hover:shadow-lg active:translate-y-px active:scale-[0.98] sm:px-8 sm:text-base">
+              <TranslatedText
+                text="Explore Houses"
+                cacheKey="apartments:banner:button"
+              />
             </button>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-10 mt-20">
+      <section className="container mx-auto mt-20 px-4 sm:px-6 lg:px-10">
         <FaqAccordion items={faqItems} />
       </section>
     </main>

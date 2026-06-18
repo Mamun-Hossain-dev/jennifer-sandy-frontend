@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ContactCtaSection } from '@/components/shared/contact-cta-section'
 import type { BlogPost } from '@/lib/blog-api'
 import { stripHtml } from '@/lib/utils'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const ITEMS_PER_PAGE = 8
 
@@ -51,11 +52,15 @@ export function BlogSharedBottom({ blogs }: BlogSharedBottomProps) {
     <>
       <ContactCtaSection />
 
-      <section className="container mx-auto px-6 lg:px-10">
-        <h2 className="section-title text-center text-primary">All Blogs</h2>
+      <section className="container mx-auto px-4 sm:px-6 lg:px-10">
+        <h2 className="section-title text-center text-primary">
+          <TranslatedText text="All Blogs" cacheKey="blogs:all:title" />
+        </h2>
         <p className="section-desc mt-1 text-center text-slate-500">
-          Explore all our articles, tips, and stories to stay informed and make
-          the best decisions for your loved ones&apos; care.
+          <TranslatedText
+            text="Explore all our articles, tips, and stories to stay informed and make the best decisions for your loved ones&apos; care."
+            cacheKey="blogs:all:subtitle"
+          />
         </p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -86,7 +91,7 @@ export function BlogSharedBottom({ blogs }: BlogSharedBottomProps) {
                   href={`/blogs/${post.slug}`}
                   className="mt-2 block text-[15px] font-semibold text-primary"
                 >
-                  Read More
+                  <TranslatedText text="Read More" cacheKey="blogs:read-more" />
                 </Link>
               </div>
             </article>
@@ -94,9 +99,12 @@ export function BlogSharedBottom({ blogs }: BlogSharedBottomProps) {
         </div>
 
         {totalPages > 1 && (
-          <div className="mt-10 flex items-center justify-between text-base text-slate-500">
+          <div className="mt-10 flex flex-col items-start justify-between gap-4 text-base text-slate-500 sm:flex-row sm:items-center">
             <p>
-              Showing {showingStart} to {showingEnd} of {blogs.length} entries
+              <TranslatedText
+                text={`Showing ${showingStart} to ${showingEnd} of ${blogs.length} entries`}
+                cacheKey={`blogs:showing:${page}:${blogs.length}`}
+              />
             </p>
             <div className="flex items-center gap-2.5">
               <button

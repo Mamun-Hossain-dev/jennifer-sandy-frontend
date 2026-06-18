@@ -16,6 +16,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { resetPassword } from '@/lib/auth-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const changePasswordSchema = z
   .object({
@@ -39,6 +41,16 @@ export function ChangePasswordContent() {
   const email = searchParams.get('email') || ''
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const missingEmailMessage = useTranslatedText(
+    'Missing email address. Please restart the password reset flow.',
+    'en',
+    { cacheKey: 'change:toast:missing-email' },
+  )
+  const passwordResetSuccessMessage = useTranslatedText(
+    'Password reset successfully! You can now log in with your new password.',
+    'en',
+    { cacheKey: 'change:toast:success' },
+  )
   const resetPasswordMutation = useMutation({
     mutationFn: resetPassword,
   })
@@ -57,9 +69,7 @@ export function ChangePasswordContent() {
 
   const onSubmit = async (data: ChangePasswordFormValues) => {
     if (!email) {
-      toast.error(
-        'Missing email address. Please restart the password reset flow.',
-      )
+      toast.error(missingEmailMessage)
       router.push('/forgot-password')
       return
     }
@@ -70,9 +80,7 @@ export function ChangePasswordContent() {
         newPassword: data.password,
       })
 
-      toast.success(
-        'Password reset successfully! You can now log in with your new password.',
-      )
+      toast.success(passwordResetSuccessMessage)
       router.push('/login')
     } catch (error) {
       toast.error(
@@ -86,20 +94,30 @@ export function ChangePasswordContent() {
 
   return (
     <AuthLayout
-      title="Change Password"
+      title={<TranslatedText text="Change Password" cacheKey="change:title" />}
       description={
         email
-          ? 'Enter your new password to reset your password'
-          : 'Please restart the password reset flow'
+          ? (
+              <TranslatedText
+                text="Enter your new password to reset your password"
+                cacheKey="change:desc:email"
+              />
+            )
+          : (
+              <TranslatedText
+                text="Please restart the password reset flow"
+                cacheKey="change:desc:restart"
+              />
+            )
       }
       footer={
         <p className="text-slate-600">
-          Back to{' '}
+          <TranslatedText text="Back to" cacheKey="change:footer:back" />{' '}
           <Link
             href="/login"
             className="text-[#006fe6] font-semibold hover:underline"
           >
-            Log In
+            <TranslatedText text="Log In" cacheKey="change:footer:login" />
           </Link>
         </p>
       }
@@ -189,7 +207,17 @@ export function ChangePasswordContent() {
           disabled={resetPasswordMutation.isPending}
           className="w-full h-11 bg-[#006fe6] hover:bg-[#005ec4] text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-200 mt-2 flex items-center justify-center gap-2"
         >
-          {resetPasswordMutation.isPending ? 'Saving password...' : 'Change Password'}
+          {resetPasswordMutation.isPending ? (
+            <TranslatedText
+              text="Saving password..."
+              cacheKey="change:loading"
+            />
+          ) : (
+            <TranslatedText
+              text="Change Password"
+              cacheKey="change:submit"
+            />
+          )}
         </Button>
       </form>
     </AuthLayout>

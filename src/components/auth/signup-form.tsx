@@ -17,6 +17,8 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { registerUser } from '@/lib/auth-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const signupSchema = z
   .object({
@@ -44,6 +46,11 @@ export function SignupForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const accountCreatedMessage = useTranslatedText(
+    'Account created successfully. Check your email for the verification code.',
+    'en',
+    { cacheKey: 'signup:toast:success' },
+  )
   const registerMutation = useMutation({
     mutationFn: registerUser,
   })
@@ -75,9 +82,7 @@ export function SignupForm() {
         password: data.password,
       })
 
-      toast.success(
-        'Account created successfully. Check your email for the verification code.',
-      )
+      toast.success(accountCreatedMessage)
       router.push(
         `/verify-otp?email=${encodeURIComponent(data.email)}&type=signup`,
       )
@@ -92,16 +97,24 @@ export function SignupForm() {
 
   return (
     <AuthLayout
-      title="Create Your Account"
-      description="Connect families with trusted care join ALH Hub today."
+      title={<TranslatedText text="Create Your Account" cacheKey="signup:title" />}
+        description={
+          <TranslatedText
+            text="Connect families with trusted care. Join 0211wohnen today."
+            cacheKey="signup:desc"
+          />
+        }
       footer={
         <p className="text-slate-600">
-          Already have an account?{' '}
+          <TranslatedText
+            text="Already have an account?"
+            cacheKey="signup:footer:prompt"
+          />{' '}
           <Link
             href="/login"
             className="text-[#006fe6] font-semibold hover:underline"
           >
-            Log In
+            <TranslatedText text="Log In" cacheKey="signup:footer:login" />
           </Link>
         </p>
       }
@@ -273,19 +286,25 @@ export function SignupForm() {
               htmlFor="agree"
               className="text-xs sm:text-sm font-normal text-slate-500 hover:text-slate-700 cursor-pointer select-none leading-tight transition-colors"
             >
-              {"I agree to ALH Hub's "}
+              <TranslatedText text="I agree to" cacheKey="signup:agree:prefix" />{' '}
               <Link
                 href="/terms"
                 className="text-[#006fe6] font-semibold hover:underline"
               >
-                Terms & Conditions
+                <TranslatedText
+                  text="Terms & Conditions"
+                  cacheKey="signup:agree:terms"
+                />
               </Link>{' '}
-              and{' '}
+              <TranslatedText text="and" cacheKey="signup:agree:and" />{' '}
               <Link
                 href="/privacy"
                 className="text-[#006fe6] font-semibold hover:underline"
               >
-                Privacy Policy
+                <TranslatedText
+                  text="Privacy Policy"
+                  cacheKey="signup:agree:privacy"
+                />
               </Link>
               .
             </label>
@@ -303,7 +322,14 @@ export function SignupForm() {
           disabled={registerMutation.isPending}
           className="w-full h-11 bg-[#006fe6] hover:bg-[#005ec4] text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-200 mt-2 flex items-center justify-center gap-2"
         >
-          {registerMutation.isPending ? 'Creating account...' : 'Sign Up'}
+          {registerMutation.isPending ? (
+            <TranslatedText
+              text="Creating account..."
+              cacheKey="signup:loading"
+            />
+          ) : (
+            <TranslatedText text="Sign Up" cacheKey="signup:submit" />
+          )}
         </Button>
       </form>
     </AuthLayout>

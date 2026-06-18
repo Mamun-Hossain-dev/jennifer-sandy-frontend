@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { MessageSquare, Settings, Home } from 'lucide-react'
 import { LogoutModal } from '@/components/shared/logout-modal'
 import { cn } from '@/lib/utils'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const navItems = [
   {
@@ -63,7 +64,10 @@ export function AccountShell({ children }: { children: ReactNode }) {
                 )}
               >
                 <item.icon className="h-5 w-5" />
-                {item.label}
+                <TranslatedText
+                  text={item.label}
+                  cacheKey={`account-shell:${item.label}`}
+                />
               </Link>
             )
           })}

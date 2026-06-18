@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { submitLandlordLead } from '@/lib/landlord-api'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const landlordLeadSchema = z.object({
   firstName: z.string().trim().min(1, 'First name is required'),
@@ -118,28 +119,43 @@ export function LandlordLeadModal({
         <div className="max-h-[82vh] overflow-y-auto bg-white">
           <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#F7FAFF_0%,#FFFFFF_100%)] px-6 py-6 md:px-8">
             <span className="inline-flex w-fit rounded-full border border-[#1672E6]/10 bg-[#1672E6]/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#1672E6]">
-              {copy.badge}
+              <TranslatedText
+                text={copy.badge}
+                cacheKey={`landlord-modal:badge:${source}`}
+              />
             </span>
             <div className="mt-4 flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#1672E6]/10">
                 <Building2 className="h-5 w-5 text-[#1672E6]" />
               </div>
               <h3 className="text-2xl font-semibold leading-tight text-slate-900">
-                {copy.title}
+                <TranslatedText
+                  text={copy.title}
+                  cacheKey={`landlord-modal:title:${source}`}
+                />
               </h3>
             </div>
             <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
-              {copy.description}
+              <TranslatedText
+                text={copy.description}
+                cacheKey={`landlord-modal:desc:${source}`}
+              />
             </p>
           </div>
 
           <div className="px-6 py-6 md:px-8 md:py-7">
             <DialogHeader className="space-y-2">
               <DialogTitle className="text-2xl font-semibold text-slate-900">
-                Tell us about your apartment
+                <TranslatedText
+                  text="Tell us about your apartment"
+                  cacheKey="landlord-modal:form:title"
+                />
               </DialogTitle>
               <DialogDescription className="text-sm leading-6 text-slate-500">
-                We only need a few details to get your listing conversation started.
+                <TranslatedText
+                  text="We only need a few details to get your listing conversation started."
+                  cacheKey="landlord-modal:form:desc"
+                />
               </DialogDescription>
             </DialogHeader>
 
@@ -149,7 +165,12 @@ export function LandlordLeadModal({
             >
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="landlord-first-name">First Name</Label>
+                  <Label htmlFor="landlord-first-name">
+                    <TranslatedText
+                      text="First Name"
+                      cacheKey="landlord-modal:first"
+                    />
+                  </Label>
                   <Input
                     id="landlord-first-name"
                     placeholder="Tallulah"
@@ -163,7 +184,9 @@ export function LandlordLeadModal({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="landlord-last-name">Last Name</Label>
+                  <Label htmlFor="landlord-last-name">
+                    <TranslatedText text="Last Name" cacheKey="landlord-modal:last" />
+                  </Label>
                   <Input
                     id="landlord-last-name"
                     placeholder="Elliott"
@@ -179,7 +202,9 @@ export function LandlordLeadModal({
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="landlord-email">Email Address</Label>
+                  <Label htmlFor="landlord-email">
+                    <TranslatedText text="Email Address" cacheKey="landlord-modal:email" />
+                  </Label>
                   <Input
                     id="landlord-email"
                     type="email"
@@ -194,7 +219,9 @@ export function LandlordLeadModal({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="landlord-phone">Phone Number</Label>
+                  <Label htmlFor="landlord-phone">
+                    <TranslatedText text="Phone Number" cacheKey="landlord-modal:phone" />
+                  </Label>
                   <Input
                     id="landlord-phone"
                     type="tel"
@@ -210,7 +237,12 @@ export function LandlordLeadModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="landlord-address">Property Address</Label>
+                <Label htmlFor="landlord-address">
+                  <TranslatedText
+                    text="Property Address"
+                    cacheKey="landlord-modal:address"
+                  />
+                </Label>
                 <Input
                   id="landlord-address"
                   placeholder="Königsallee 15, 40212 Düsseldorf"
@@ -219,7 +251,12 @@ export function LandlordLeadModal({
               </div>
 
               <div className="space-y-3">
-                <Label>Property Type</Label>
+                <Label>
+                  <TranslatedText
+                    text="Property Type"
+                    cacheKey="landlord-modal:type"
+                  />
+                </Label>
                 <div className="flex flex-wrap gap-2">
                   {propertyTypes.map(type => {
                     const isActive = form.watch('propertyType') === type
@@ -240,7 +277,10 @@ export function LandlordLeadModal({
                             : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-[#1672E6]/50 hover:text-[#1672E6]',
                         )}
                       >
-                        {type}
+                        <TranslatedText
+                          text={type}
+                          cacheKey={`landlord-modal:type:${type}`}
+                        />
                       </button>
                     )
                   })}
@@ -248,7 +288,9 @@ export function LandlordLeadModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="landlord-message">Message</Label>
+                <Label htmlFor="landlord-message">
+                  <TranslatedText text="Message" cacheKey="landlord-modal:message" />
+                </Label>
                 <Textarea
                   id="landlord-message"
                   rows={5}
@@ -258,7 +300,10 @@ export function LandlordLeadModal({
               </div>
 
               <div className="rounded-2xl border border-[#1672E6]/10 bg-[#1672E6]/5 px-4 py-3 text-sm text-slate-600">
-                Our team usually replies within 1 business day.
+                <TranslatedText
+                  text="Our team usually replies within 1 business day."
+                  cacheKey="landlord-modal:notice"
+                />
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
@@ -268,14 +313,24 @@ export function LandlordLeadModal({
                   onClick={() => onOpenChange(false)}
                   className="h-11 px-5"
                 >
-                  Cancel
+                  <TranslatedText text="Cancel" cacheKey="landlord-modal:cancel" />
                 </Button>
                 <Button
                   type="submit"
                   disabled={submitMutation.isPending}
                   className="h-11 bg-[#1672E6] px-6 text-white hover:bg-[#0f63ce]"
                 >
-                  {submitMutation.isPending ? 'Sending...' : copy.cta}
+                  {submitMutation.isPending ? (
+                    <TranslatedText
+                      text="Sending..."
+                      cacheKey="landlord-modal:sending"
+                    />
+                  ) : (
+                    <TranslatedText
+                      text={copy.cta}
+                      cacheKey={`landlord-modal:cta:${source}`}
+                    />
+                  )}
                 </Button>
               </div>
             </form>

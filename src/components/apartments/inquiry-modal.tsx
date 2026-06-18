@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { X } from 'lucide-react'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 interface InquiryFormData {
   firstName: string
@@ -148,10 +149,10 @@ export function InquiryModal({
         </button>
 
         <h2 className="text-xl font-semibold text-[#1672E6] mb-1">
-          Send Inquiry
+          <TranslatedText text="Send Inquiry" cacheKey="inquiry:title" />
         </h2>
         <p className="text-sm text-slate-500 mb-5">
-          Interested in{' '}
+          <TranslatedText text="Interested in" cacheKey="inquiry:intro" />{' '}
           <span className="font-medium text-slate-700">{apartmentTitle}</span>
         </p>
 
@@ -173,7 +174,10 @@ export function InquiryModal({
               </svg>
             </div>
             <p className="text-sm font-medium text-green-700">
-              Inquiry submitted successfully!
+              <TranslatedText
+                text="Inquiry submitted successfully!"
+                cacheKey="inquiry:success"
+              />
             </p>
           </div>
         ) : (
@@ -187,7 +191,7 @@ export function InquiryModal({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  First Name
+                  <TranslatedText text="First Name" cacheKey="inquiry:first" />
                 </label>
                 <input
                   value={form.firstName}
@@ -203,7 +207,7 @@ export function InquiryModal({
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Last Name
+                  <TranslatedText text="Last Name" cacheKey="inquiry:last" />
                 </label>
                 <input
                   value={form.lastName}
@@ -221,7 +225,7 @@ export function InquiryModal({
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Email Address
+                <TranslatedText text="Email Address" cacheKey="inquiry:email" />
               </label>
               <input
                 type="email"
@@ -237,7 +241,7 @@ export function InquiryModal({
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Phone Number
+                <TranslatedText text="Phone Number" cacheKey="inquiry:phone" />
               </label>
               <input
                 value={form.phoneNumber}
@@ -255,7 +259,7 @@ export function InquiryModal({
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Message
+                <TranslatedText text="Message" cacheKey="inquiry:message" />
               </label>
               <textarea
                 value={form.message}
@@ -275,13 +279,20 @@ export function InquiryModal({
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#1672E6] hover:bg-[#0f63ce] disabled:bg-[#1672E6]/60 text-white text-sm font-semibold py-3 rounded-lg transition-colors"
-            >
-              {isSubmitting ? 'Sending...' : 'Send Inquiry'}
-            </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#1672E6] hover:bg-[#0f63ce] disabled:bg-[#1672E6]/60 text-white text-sm font-semibold py-3 rounded-lg transition-colors"
+              >
+                {isSubmitting ? (
+                  <TranslatedText text="Sending..." cacheKey="inquiry:sending" />
+                ) : (
+                  <TranslatedText
+                    text="Send Inquiry"
+                    cacheKey="inquiry:submit"
+                  />
+                )}
+              </button>
           </form>
         )}
       </div>

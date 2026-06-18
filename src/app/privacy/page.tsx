@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import type { Metadata } from 'next'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | 0211wohnen',
@@ -226,13 +227,18 @@ function Section({
 }) {
   return (
     <div className="mb-10">
-      <h2 className="text-base font-semibold text-gray-900 mb-3">{heading}</h2>
+      <h2 className="text-base font-semibold text-gray-900 mb-3">
+        <TranslatedText text={heading} cacheKey={`privacy:h:${heading}`} />
+      </h2>
       <div className="space-y-3">
         {content.map((block, i) => {
           if (block.type === 'paragraph') {
             return (
               <p key={i} className="text-sm text-gray-600 leading-relaxed">
-                {block.text}
+                <TranslatedText
+                  text={block.text}
+                  cacheKey={`privacy:p:${heading}:${i}`}
+                />
               </p>
             )
           }
@@ -245,7 +251,10 @@ function Section({
                     className="flex items-start gap-2 text-sm text-gray-600"
                   >
                     <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                    {item}
+                    <TranslatedText
+                      text={item}
+                      cacheKey={`privacy:b:${heading}:${i}:${j}`}
+                    />
                   </li>
                 ))}
               </ul>
@@ -255,7 +264,10 @@ function Section({
             return (
               <div key={i}>
                 <p className="text-sm text-gray-700 font-medium mb-2">
-                  {block.heading}
+                  <TranslatedText
+                    text={block.heading}
+                    cacheKey={`privacy:n:${heading}:${i}`}
+                  />
                 </p>
                 <ul className="space-y-1.5 ml-1">
                   {block.items.map((item, j) => (
@@ -264,7 +276,10 @@ function Section({
                       className="flex items-start gap-2 text-sm text-gray-600"
                     >
                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                      {item}
+                      <TranslatedText
+                        text={item}
+                        cacheKey={`privacy:nitem:${heading}:${i}:${j}`}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -282,8 +297,8 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-[#F3F3F3] font-manrope">
       <main className="py-12">
-        <section className="container mx-auto px-6 lg:px-10 mb-12">
-          <div className="relative w-full h-48 md:h-56 rounded-xl overflow-hidden">
+        <section className="container mx-auto mb-12 px-4 sm:px-6 lg:px-10">
+          <div className="relative h-40 w-full overflow-hidden rounded-xl sm:h-48 md:h-56">
             <Image
               src="/images/about-banner.jpg"
               alt="Privacy Policy"
@@ -292,19 +307,24 @@ export default function PrivacyPolicyPage() {
               priority
             />
             <div className="absolute inset-0 bg-black/50" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
               <h1 className="text-white text-2xl md:text-3xl font-semibold mb-2">
-                Privacy Policy
+                <TranslatedText
+                  text="Privacy Policy"
+                  cacheKey="privacy:title"
+                />
               </h1>
               <p className="text-white/80 text-sm max-w-xl">
-                Your privacy matters to us. Learn how we collect, use, and
-                protect your personal data in accordance with GDPR.
+                <TranslatedText
+                  text="Your privacy matters to us. Learn how we collect, use, and protect your personal data in accordance with GDPR."
+                  cacheKey="privacy:subtitle"
+                />
               </p>
             </div>
           </div>
         </section>
 
-        <div className="container mx-auto px-6 lg:px-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-10">
           <div className="mx-auto container">
             {sections.map(section => (
               <Section

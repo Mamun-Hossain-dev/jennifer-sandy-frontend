@@ -18,6 +18,8 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { loginUser, normalizeAuthUser } from '@/lib/auth-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -32,6 +34,11 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export function LoginForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const welcomeBackMessage = useTranslatedText(
+    'Welcome back! Logged in successfully.',
+    'en',
+    { cacheKey: 'login:toast:success' },
+  )
   const loginMutation = useMutation({
     mutationFn: loginUser,
   })
@@ -72,7 +79,7 @@ export function LoginForm() {
         return
       }
 
-      toast.success('Welcome back! Logged in successfully.')
+      toast.success(welcomeBackMessage)
       router.push('/account/inquiries')
     } catch (error) {
       toast.error(
@@ -83,16 +90,26 @@ export function LoginForm() {
 
   return (
     <AuthLayout
-      title="Welcome"
-      description="Access your account to manage tours, leads, and listings"
+      title={
+        <TranslatedText text="Welcome" cacheKey="login:title" />
+      }
+      description={
+        <TranslatedText
+          text="Access your account to manage tours, leads, and listings"
+          cacheKey="login:desc"
+        />
+      }
       footer={
         <p className="text-slate-600">
-          {"Don't have an account? "}
+          <TranslatedText
+            text="Don't have an account?"
+            cacheKey="login:footer:prompt"
+          />{' '}
           <Link
             href="/signup"
             className="text-[#006fe6] font-semibold hover:underline"
           >
-            Sign Up
+            <TranslatedText text="Sign Up" cacheKey="login:footer:signup" />
           </Link>
         </p>
       }
@@ -101,7 +118,10 @@ export function LoginForm() {
         {/* Email Address */}
         <div className="space-y-2">
           <Label htmlFor="email" className="text-sm font-medium text-slate-700">
-            Email Address
+            <TranslatedText
+              text="Email Address"
+              cacheKey="login:email"
+            />
           </Label>
           <Input
             id="email"
@@ -128,7 +148,7 @@ export function LoginForm() {
               htmlFor="password"
               className="text-sm font-medium text-slate-700"
             >
-              Password
+              <TranslatedText text="Password" cacheKey="login:password" />
             </Label>
           </div>
           <div className="relative">
@@ -179,14 +199,20 @@ export function LoginForm() {
               htmlFor="rememberMe"
               className="text-sm font-normal text-slate-500 hover:text-slate-700 cursor-pointer select-none transition-colors"
             >
-              Remember me
+              <TranslatedText
+                text="Remember me"
+                cacheKey="login:remember"
+              />
             </label>
           </div>
           <Link
             href="/forgot-password"
             className="text-sm font-medium text-[#006fe6] hover:underline transition-colors"
           >
-            Forgot password?
+            <TranslatedText
+              text="Forgot password?"
+              cacheKey="login:forgot"
+            />
           </Link>
         </div>
 
@@ -196,7 +222,11 @@ export function LoginForm() {
           disabled={loginMutation.isPending}
           className="w-full h-11 bg-[#006fe6] hover:bg-[#005ec4] text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-200 mt-2 flex items-center justify-center gap-2"
         >
-          {loginMutation.isPending ? 'Logging in...' : 'Log In'}
+          {loginMutation.isPending ? (
+            <TranslatedText text="Logging in..." cacheKey="login:loading" />
+          ) : (
+            <TranslatedText text="Log In" cacheKey="login:submit" />
+          )}
         </Button>
       </form>
     </AuthLayout>

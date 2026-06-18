@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { FaqAccordion } from '@/components/shared/faq-accordion'
 import { ContactCtaSection } from '@/components/shared/contact-cta-section'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const faqs = [
   {
@@ -43,33 +44,35 @@ export function FaqPageContent() {
       {/* ───────────────────────────────────────
           HERO BANNER — "Find Your Perfect Home"
       ─────────────────────────────────────────── */}
-      <section className="container mx-auto px-6 lg:px-10">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-10">
         <div className="relative overflow-hidden rounded-[20px]">
           <Image
             src="/images/banner.jpg"
             alt="Explore homes banner"
             width={1600}
             height={650}
-            className="h-[420px] w-full object-cover"
+            className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[420px]"
             priority
           />
           <div className="absolute inset-0 bg-black/35" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white sm:px-8 lg:px-10">
             <h1 className="font-serif font-bold text-3xl md:text-[40px] leading-[150%]">
-              Find <span className="text-[#1672E6]">Your Perfect</span> Home
+              <TranslatedText
+                text="Find Your Perfect Home"
+                cacheKey="faq:hero:title"
+              />
             </h1>
             <p className="mt-4 max-w-3xl text-sm md:text-base leading-relaxed text-white/95">
-              Easily search, compare, and connect with professionally managed
-              apartments and homes. Whether you&apos;re looking for a cozy
-              studio, a family-friendly space, or a stylish city pad, we help
-              you find a safe, comfortable, and move-in ready home—without
-              agents or hidden fees.
+              <TranslatedText
+                text="Easily search, compare, and connect with professionally managed apartments and homes. Whether you&apos;re looking for a cozy studio, a family-friendly space, or a stylish city pad, we help you find a safe, comfortable, and move-in ready home without agents or hidden fees."
+                cacheKey="faq:hero:subtitle"
+              />
             </p>
             <a
               href="/apartments"
               className="mt-8 inline-flex items-center justify-center rounded-lg bg-[#1672E6] px-8 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0f63ce] hover:shadow-lg active:translate-y-px active:scale-[0.98]"
             >
-              Explore Houses
+              <TranslatedText text="Explore Houses" cacheKey="faq:hero:cta" />
             </a>
           </div>
         </div>
@@ -78,7 +81,7 @@ export function FaqPageContent() {
       {/* ───────────────────────────────────────
           FAQ ACCORDION
       ─────────────────────────────────────────── */}
-      <section className="container mx-auto px-6 lg:px-10 ">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-10 ">
         <FaqAccordion
           items={faqs}
           showHeader={true}

@@ -33,13 +33,20 @@ import { ContactCtaSection } from '@/components/shared/contact-cta-section'
 import { InquiryModal } from '@/components/apartments/inquiry-modal'
 import dynamic from 'next/dynamic'
 import type { Apartment } from '@/lib/apartments-api'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const MapComponent = dynamic(() => import('./MapComponent'), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full rounded-2xl bg-slate-100 flex items-center justify-center border border-slate-200">
       <div className="text-slate-500 font-medium flex flex-col items-center gap-2">
-        <span>Loading Map...</span>
+        <span>
+          <TranslatedText
+            text="Loading Map..."
+            cacheKey="apt:loading-map"
+          />
+        </span>
       </div>
     </div>
   ),
@@ -143,6 +150,11 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
+  const signInToInquireMessage = useTranslatedText(
+    'Please sign in to send an inquiry',
+    'en',
+    { cacheKey: 'apt:toast:sign-in-inquiry' },
+  )
 
   const similarApartments = allApartments.filter(a => a.id !== apartment.id)
   const whyChooseItems =
@@ -239,7 +251,11 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
           <div className="flex-1 min-w-0">
             {/* Title & specs */}
             <h1 className="font-serif text-[#1672E6] text-2xl md:text-[32px] font-bold leading-[150%]">
-              {apartment.title}
+              <TranslatedText
+                text={apartment.title}
+                sourceLang="de"
+                cacheKey={`apt:title:${apartment.id}`}
+              />
             </h1>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-slate-500 font-medium">
               <span className="flex items-center gap-1.5">
@@ -248,15 +264,24 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
               </span>
               <span className="flex items-center gap-1.5">
                 <BedDouble className="h-4 w-4" />
-                {apartment.rooms} Rooms
+                {apartment.rooms}{' '}
+                <TranslatedText text="Rooms" cacheKey="apt:rooms" />
               </span>
               <span className="flex items-center gap-1.5">
                 <DoorOpen className="h-4 w-4" />
-                {apartment.hasBalcony ? 'Balcony' : 'No Balcony'}
+                {apartment.hasBalcony ? (
+                  <TranslatedText text="Balcony" cacheKey="apt:balcony" />
+                ) : (
+                  <TranslatedText text="No Balcony" cacheKey="apt:no-balcony" />
+                )}
               </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                Available from {apartment.availableFrom}
+                <TranslatedText
+                  text="Available from"
+                  cacheKey="apt:available"
+                />{' '}
+                {apartment.availableFrom}
               </span>
             </div>
 
@@ -265,10 +290,14 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
 
             {/* Description */}
             <h2 className="font-sans text-slate-800 text-lg font-semibold mb-3">
-              Description
+              <TranslatedText text="Description" cacheKey="apt:desc:title" />
             </h2>
             <div className="text-sm text-slate-500 leading-relaxed whitespace-pre-line">
-              {apartment.description}
+              <TranslatedText
+                text={apartment.description}
+                sourceLang="de"
+                cacheKey={`apt:desc:${apartment.id}`}
+              />
             </div>
 
             {/* Divider */}
@@ -276,7 +305,7 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
 
             {/* Amenities */}
             <h2 className="font-sans text-slate-800 text-lg font-semibold mb-5">
-              Amenities
+              <TranslatedText text="Amenities" cacheKey="apt:amenities:title" />
             </h2>
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {apartment.amenities.map(amenity => (
@@ -285,7 +314,10 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                     <CircleCheck className="h-5 w-5 text-[#1672E6]" />
                   )}
                   <span className="text-sm text-slate-600 font-medium">
-                    {amenity}
+                    <TranslatedText
+                      text={amenity}
+                      cacheKey={`apt:amenity:${amenity}`}
+                    />
                   </span>
                 </div>
               ))}
@@ -296,7 +328,11 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
 
             {/* Why Choose */}
             <h2 className="font-sans text-slate-800 text-lg font-bold mb-4">
-              Why Choose {apartment.title}?
+              <TranslatedText
+                text={`Why Choose ${apartment.title}?`}
+                sourceLang="de"
+                cacheKey={`apt:why:title:${apartment.id}`}
+              />
             </h2>
             <ul className="space-y-2.5">
               {whyChooseItems.map((item, i) => (
@@ -305,7 +341,11 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                   className="flex items-start gap-2 text-sm text-slate-500 leading-relaxed"
                 >
                   <span className="mt-1 shrink-0 h-1.5 w-1.5 rounded-full bg-slate-400" />
-                  {item}
+                  <TranslatedText
+                    text={item}
+                    sourceLang="de"
+                    cacheKey={`apt:why:${apartment.id}:${i}`}
+                  />
                 </li>
               ))}
             </ul>
@@ -318,24 +358,37 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                 {apartment.price.toLocaleString('de-DE')} €
               </p>
               <p className="text-sm text-slate-400 font-medium mt-0.5">
-                per month
+                <TranslatedText text="per month" cacheKey="apt:price:month" />
               </p>
 
               <div className="border-t border-slate-100 mt-5 pt-5 space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-500">Minimum stay</span>
+                  <span className="text-slate-500">
+                    <TranslatedText
+                      text="Minimum stay"
+                      cacheKey="apt:min-stay"
+                    />
+                  </span>
                   <span className="font-semibold text-slate-700">
-                    {apartment.minimumStay} months
+                    {apartment.minimumStay}{' '}
+                    <TranslatedText text="months" cacheKey="apt:months" />
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-500">Deposit</span>
+                  <span className="text-slate-500">
+                    <TranslatedText text="Deposit" cacheKey="apt:deposit" />
+                  </span>
                   <span className="font-semibold text-slate-700">
                     {apartment.deposit.toLocaleString('de-DE')} €
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-500">Service fee</span>
+                  <span className="text-slate-500">
+                    <TranslatedText
+                      text="Service fee"
+                      cacheKey="apt:service-fee"
+                    />
+                  </span>
                   <span className="font-semibold text-slate-700">
                     {apartment.serviceFee}
                   </span>
@@ -345,7 +398,7 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
               <button
                 onClick={() => {
                   if (!session) {
-                    toast.error('Please sign in to send an inquiry')
+                    toast.error(signInToInquireMessage)
                     router.push('/login')
                     return
                   }
@@ -353,10 +406,16 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                 }}
                 className="w-full mt-6 bg-[#1672E6] hover:bg-[#0f63ce] text-white text-sm font-bold py-3.5 rounded-xl shadow-sm transition-all duration-200 active:scale-[0.98]"
               >
-                Send Inquiry
+                <TranslatedText
+                  text="Send Inquiry"
+                  cacheKey="apt:send-inquiry"
+                />
               </button>
               <p className="text-center text-xs text-slate-400 mt-2">
-                Response within 24 hours
+                <TranslatedText
+                  text="Response within 24 hours"
+                  cacheKey="apt:response"
+                />
               </p>
             </div>
           </div>
@@ -370,13 +429,26 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           <div className="flex-1">
             <h2 className="font-serif text-[#1672E6] text-2xl md:text-[28px] font-bold leading-[150%]">
-              Location: {apartment.district}
+              <TranslatedText text="Location" cacheKey="apt:location:title" />:{' '}
+              <TranslatedText
+                text={apartment.district}
+                sourceLang="de"
+                cacheKey={`apt:location:district:${apartment.id}`}
+              />
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              {apartment.locationSubtitle}
+              <TranslatedText
+                text={apartment.locationSubtitle}
+                sourceLang="de"
+                cacheKey={`apt:location:subtitle:${apartment.id}`}
+              />
             </p>
             <p className="text-sm text-slate-500 leading-relaxed mt-4 max-w-lg">
-              {apartment.locationDescription}
+              <TranslatedText
+                text={apartment.locationDescription}
+                sourceLang="de"
+                cacheKey={`apt:location:desc:${apartment.id}`}
+              />
             </p>
             <div className="mt-5 space-y-2">
               {locationItems.map(item => (
@@ -385,7 +457,12 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                   className="flex items-center gap-2 text-sm text-slate-600"
                 >
                   <CircleCheck className="h-4 w-4 text-[#1672E6]" />
-                  {item.label}: {item.distance}
+                  <TranslatedText
+                    text={item.label}
+                    sourceLang="de"
+                    cacheKey={`apt:location:item:${item.label}`}
+                  />{' '}
+                  : {item.distance}
                 </div>
               ))}
             </div>
@@ -404,8 +481,11 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
           SERVICE ADVANTAGES
       ─────────────────────────────────────────── */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-10 mt-16">
-        <h2 className="font-sans text-slate-800 text-lg font-bold mb-8">
-          Your 0211 service advantage
+          <h2 className="font-sans text-slate-800 text-lg font-bold mb-8">
+          <TranslatedText
+            text="Your 0211 service advantage"
+            cacheKey="apt:advantage:title"
+          />
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {serviceAdvantages.map(item => (
@@ -417,9 +497,17 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                 {item.icon}
               </div>
               <h4 className="font-semibold text-slate-800 text-sm">
-                {item.title}
+                <TranslatedText
+                  text={item.title}
+                  cacheKey={`apt:advantage:${item.title}`}
+                />
               </h4>
-              <p className="text-xs text-slate-400 mt-0.5">{item.desc}</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                <TranslatedText
+                  text={item.desc}
+                  cacheKey={`apt:advantage-desc:${item.title}`}
+                />
+              </p>
             </div>
           ))}
         </div>
@@ -432,11 +520,16 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
         <div className="container mx-auto px-4 sm:px-6 lg:px-10">
           <div className="text-center mb-8">
             <h2 className="font-serif text-[#1672E6] text-2xl md:text-[32px] font-bold leading-[150%]">
-              Similar Facilities
+              <TranslatedText
+                text="Similar Facilities"
+                cacheKey="apt:similar:title"
+              />
             </h2>
             <p className="text-sm text-slate-500 mt-1 max-w-xl mx-auto">
-              Discover highlighted living options carefully tailored to meet the
-              needs of families and their loved ones.
+              <TranslatedText
+                text="Discover highlighted living options carefully tailored to meet the needs of families and their loved ones."
+                cacheKey="apt:similar:subtitle"
+              />
             </p>
           </div>
 
@@ -466,26 +559,38 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
                         {apt.title}
                       </h3>
                       <p className="text-xs text-slate-400 font-semibold tracking-wide uppercase mb-2">
-                        {apt.size} m² | {apt.rooms} Rooms |{' '}
-                        {apt.hasBalcony ? 'Balcony' : 'No Balcony'}
+                        {apt.size} m² | {apt.rooms}{' '}
+                        <TranslatedText text="Rooms" cacheKey="apt:rooms" /> |{' '}
+                        {apt.hasBalcony ? (
+                          <TranslatedText text="Balcony" cacheKey="apt:balcony" />
+                        ) : (
+                          <TranslatedText
+                            text="No Balcony"
+                            cacheKey="apt:no-balcony"
+                          />
+                        )}
                       </p>
                       <p className="text-[#1672E6] font-bold text-lg">
                         {apt.price.toLocaleString('de-DE')} €{' '}
                         <span className="text-xs text-slate-400 font-semibold">
-                          / Month
+                          <TranslatedText text="/ Month" cacheKey="apt:month" />
                         </span>
                       </p>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
                       <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
                         <CircleCheck className="h-4 w-4 text-[#22C55E]" />
-                        Available from {apt.availableFrom}
+                        <TranslatedText
+                          text="Available from"
+                          cacheKey="apt:available"
+                        />{' '}
+                        {apt.availableFrom}
                       </div>
                       <Link
                         href={`/apartments/${apt.id}`}
                         className="border-2 border-[#1672E6] text-[#1672E6] hover:bg-[#1672E6] hover:text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all duration-200"
                       >
-                        Details
+                        <TranslatedText text="Details" cacheKey="apt:details" />
                       </Link>
                     </div>
                   </div>
@@ -529,20 +634,22 @@ export function ApartmentDetailContent({ apartment, allApartments }: Props) {
           <div className="absolute inset-0 bg-black/35" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center text-white">
             <h3 className="font-serif font-bold text-3xl md:text-[40px] leading-[150%]">
-              Find <span className="text-[#1672E6]">Your Perfect</span> Home
+              <TranslatedText
+                text="Find Your Perfect Home"
+                cacheKey="apt:banner:title"
+              />
             </h3>
             <p className="mt-4 max-w-3xl text-sm md:text-base leading-relaxed text-white/95">
-              Easily search, compare, and connect with professionally managed
-              apartments and homes. Whether you&apos;re looking for a cozy
-              studio, a family-friendly space, or a stylish city pad, we help
-              you find a safe, comfortable, and move-in ready home—without
-              agents or hidden fees.
+              <TranslatedText
+                text="Easily search, compare, and connect with professionally managed apartments and homes. Whether you&apos;re looking for a cozy studio, a family-friendly space, or a stylish city pad, we help you find a safe, comfortable, and move-in ready home without agents or hidden fees."
+                cacheKey="apt:banner:subtitle"
+              />
             </p>
             <Link
               href="/apartments"
               className="mt-8 rounded-lg bg-[#1672E6] px-8 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0f63ce] hover:shadow-lg active:translate-y-px active:scale-[0.98]"
             >
-              Explore Houses
+              <TranslatedText text="Explore Houses" cacheKey="apt:banner:button" />
             </Link>
           </div>
         </div>

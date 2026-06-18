@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { sendForgotPasswordOtp } from '@/lib/auth-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -23,6 +25,11 @@ type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 
 export function ForgotPasswordForm() {
   const router = useRouter()
+  const otpSentMessage = useTranslatedText(
+    'Verification code sent to your email!',
+    'en',
+    { cacheKey: 'forgot:toast:success' },
+  )
   const forgotPasswordMutation = useMutation({
     mutationFn: sendForgotPasswordOtp,
   })
@@ -42,7 +49,7 @@ export function ForgotPasswordForm() {
     try {
       await forgotPasswordMutation.mutateAsync({ email: data.email })
 
-      toast.success('Verification code sent to your email!')
+      toast.success(otpSentMessage)
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`)
     } catch (error) {
       toast.error(
@@ -56,16 +63,26 @@ export function ForgotPasswordForm() {
 
   return (
     <AuthLayout
-      title="Forgot Password"
-      description="Enter your email to receive your password reset code"
+      title={
+        <TranslatedText text="Forgot Password" cacheKey="forgot:title" />
+      }
+      description={
+        <TranslatedText
+          text="Enter your email to receive your password reset code"
+          cacheKey="forgot:desc"
+        />
+      }
       footer={
         <p className="text-slate-600">
-          Remember your password?{' '}
+          <TranslatedText
+            text="Remember your password?"
+            cacheKey="forgot:footer:prompt"
+          />{' '}
           <Link
             href="/login"
             className="text-[#006fe6] font-semibold hover:underline"
           >
-            Log In
+            <TranslatedText text="Log In" cacheKey="forgot:footer:login" />
           </Link>
         </p>
       }
@@ -100,7 +117,14 @@ export function ForgotPasswordForm() {
           disabled={forgotPasswordMutation.isPending}
           className="w-full h-11 bg-[#006fe6] hover:bg-[#005ec4] text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-200 mt-2 flex items-center justify-center gap-2"
         >
-          {forgotPasswordMutation.isPending ? 'Sending code...' : 'Send OTP'}
+          {forgotPasswordMutation.isPending ? (
+            <TranslatedText
+              text="Sending code..."
+              cacheKey="forgot:loading"
+            />
+          ) : (
+            <TranslatedText text="Send OTP" cacheKey="forgot:submit" />
+          )}
         </Button>
       </form>
     </AuthLayout>

@@ -12,12 +12,27 @@ import { DeleteModal } from '@/components/account/delete-modal'
 import { fetchRecentInquiries } from '@/lib/dashboard-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import type { InquiryRecord } from '@/types/dashboard'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 export function InquiryListContent() {
   const router = useRouter()
   const { data: session } = useSession()
   const token = session?.user?.accessToken
   const queryClient = useQueryClient()
+  const inquiryDeletedMessage = useTranslatedText(
+    'Inquiry deleted successfully',
+    'en',
+    { cacheKey: 'inquiries:toast:deleted' },
+  )
+  const deleteFailedMessage = useTranslatedText('Failed to delete', 'en', {
+    cacheKey: 'inquiries:toast:error',
+  })
+  const genericErrorMessage = useTranslatedText(
+    'Something went wrong',
+    'en',
+    { cacheKey: 'inquiries:error:generic' },
+  )
 
   const [page, setPage] = useState(1)
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -51,12 +66,12 @@ export function InquiryListContent() {
       return res.json()
     },
     onSuccess: () => {
-      toast.success('Inquiry deleted successfully')
+      toast.success(inquiryDeletedMessage)
       queryClient.invalidateQueries({ queryKey: ['account-inquiries'] })
       setDeleteId(null)
     },
     onError: error => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete'))
+      toast.error(getApiErrorMessage(error, deleteFailedMessage))
     },
   })
 
@@ -75,10 +90,13 @@ export function InquiryListContent() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold leading-[120%] text-[#343A40]">
-          My Inquiries
+          <TranslatedText text="My Inquiries" cacheKey="inquiries:title" />
         </h1>
         <p className="mt-2 text-base font-normal leading-[150%] text-[#68706A]">
-          Here&rsquo;s an overview of your inquiries
+          <TranslatedText
+            text="Here&apos;s an overview of your inquiries"
+            cacheKey="inquiries:subtitle"
+          />
         </p>
       </div>
 
@@ -89,7 +107,7 @@ export function InquiryListContent() {
           isLoading={isLoading}
           isError={isError}
           errorMessage={
-            error instanceof Error ? error.message : 'Something went wrong'
+            error instanceof Error ? error.message : genericErrorMessage
           }
           onRetry={() => refetch()}
           totalPages={totalPages}

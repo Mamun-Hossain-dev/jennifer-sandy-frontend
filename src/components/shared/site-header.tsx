@@ -7,6 +7,8 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSession, getSession } from 'next-auth/react'
 import { PROFILE_UPDATED_EVENT } from '@/components/shared/profile-update-broadcast'
+import { LanguageSwitcher } from '@/components/shared/language-switcher'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -17,6 +19,10 @@ const navLinks = [
   { label: 'FAQs', href: '/faqs' },
   { label: 'Contact Us', href: '/contact' },
 ]
+
+function HeaderText({ text }: { text: string }) {
+  return <>{useTranslatedText(text, 'en', { cacheKey: `ui:${text}` })}</>
+}
 
 export function SiteHeader() {
   const pathname = usePathname()
@@ -35,6 +41,13 @@ export function SiteHeader() {
     window.addEventListener(PROFILE_UPDATED_EVENT, handler)
     return () => window.removeEventListener(PROFILE_UPDATED_EVENT, handler)
   }, [])
+
+  const signInLabel = useTranslatedText('Sign in', 'en', {
+    cacheKey: 'ui:Sign in',
+  })
+  const accountLabel = useTranslatedText('Account', 'en', {
+    cacheKey: 'ui:Account',
+  })
 
   const renderNavLink = (link: (typeof navLinks)[number], mobile = false) => {
     const isActive =
@@ -62,14 +75,14 @@ export function SiteHeader() {
           className={baseClassName}
           onClick={() => setMobileMenuOpen(false)}
         >
-          {link.label}
+          <HeaderText text={link.label} />
         </Link>
       )
     }
 
     return (
       <Link key={link.label} href={link.href} className={baseClassName}>
-        {link.label}
+        <HeaderText text={link.label} />
         <span className="absolute inset-x-0 -bottom-[2px] h-0.5 origin-left scale-x-0 bg-primary transition-transform duration-200 group-hover:scale-x-100" />
       </Link>
     )
@@ -91,7 +104,8 @@ export function SiteHeader() {
           {navLinks.map(link => renderNavLink(link))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <LanguageSwitcher />
           {isLoggedIn ? (
             <Link
               href="/account/inquiries"
@@ -115,12 +129,13 @@ export function SiteHeader() {
               href="/login"
               className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-lg active:translate-y-px active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
             >
-              Sign in
+              {signInLabel}
             </Link>
           )}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher />
           {isLoggedIn ? (
             <Link
               href="/account/inquiries"
@@ -143,7 +158,7 @@ export function SiteHeader() {
               href="/login"
               className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
             >
-              Sign in
+              {signInLabel}
             </Link>
           )}
 
@@ -183,7 +198,7 @@ export function SiteHeader() {
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary/90"
                 >
                   <User className="h-4 w-4" />
-                  Account
+                  {accountLabel}
                 </Link>
               ) : (
                 <Link
@@ -191,7 +206,7 @@ export function SiteHeader() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary/90"
                 >
-                  Sign in
+                  {signInLabel}
                 </Link>
               )}
             </div>

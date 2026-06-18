@@ -10,6 +10,8 @@ import { toast } from 'sonner'
 import { fetchMyProfile } from '@/lib/dashboard-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
 import { broadcastProfileUpdate } from '@/components/shared/profile-update-broadcast'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 export function ProfileCard() {
   const { data: session } = useSession()
@@ -17,6 +19,14 @@ export function ProfileCard() {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const profileImageUpdatedMessage = useTranslatedText(
+    'Profile image updated!',
+    'en',
+    { cacheKey: 'profile-card:toast:success' },
+  )
+  const uploadFailedMessage = useTranslatedText('Upload failed', 'en', {
+    cacheKey: 'profile-card:toast:error',
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['my-profile'],
@@ -48,7 +58,7 @@ export function ProfileCard() {
       return res.json()
     },
     onSuccess: async response => {
-      toast.success(response?.message || 'Profile image updated!')
+      toast.success(response?.message || profileImageUpdatedMessage)
       await queryClient.invalidateQueries({ queryKey: ['my-profile'] })
 
       broadcastProfileUpdate()
@@ -56,7 +66,7 @@ export function ProfileCard() {
       setPreviewUrl(null)
     },
     onError: error => {
-      toast.error(getApiErrorMessage(error, 'Upload failed'))
+      toast.error(getApiErrorMessage(error, uploadFailedMessage))
       setPreviewUrl(null)
     },
   })
@@ -130,7 +140,11 @@ export function ProfileCard() {
         <p className="mt-1 text-sm text-gray-500">{profile?.email}</p>
         {profile?.bio && (
           <p className="mt-3 text-center text-sm text-gray-600">
-            {profile.bio}
+            <TranslatedText
+              text={profile.bio}
+              sourceLang="en"
+              cacheKey={`profile-card:bio:${profile?.email || 'self'}`}
+            />
           </p>
         )}
       </div>
@@ -139,7 +153,7 @@ export function ProfileCard() {
       <div className="mt-6 space-y-4 border-t border-gray-100 px-6 pb-6 pt-4">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-            Name
+            <TranslatedText text="Name" cacheKey="profile-card:name" />
           </p>
           <p className="mt-1 text-sm font-medium text-gray-900">
             {profile?.firstName} {profile?.lastName}
@@ -147,7 +161,7 @@ export function ProfileCard() {
         </div>
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-            Email
+            <TranslatedText text="Email" cacheKey="profile-card:email" />
           </p>
           <p className="mt-1 text-sm text-gray-600">
             {profile?.email || 'N/A'}
@@ -155,7 +169,7 @@ export function ProfileCard() {
         </div>
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-            Phone
+            <TranslatedText text="Phone" cacheKey="profile-card:phone" />
           </p>
           <p className="mt-1 text-sm text-gray-600">
             {profile?.phoneNumber || 'N/A'}
@@ -163,7 +177,7 @@ export function ProfileCard() {
         </div>
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-            Location
+            <TranslatedText text="Location" cacheKey="profile-card:location" />
           </p>
           <p className="mt-1 text-sm text-gray-600">
             {profile?.location || profile?.streetAddress || 'N/A'}

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { MessageSquare, Settings, LogOut } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const navItems = [
   {
@@ -54,7 +55,10 @@ export function AccountSidebar() {
               )}
             >
               <item.icon className="h-5 w-5" />
-              {item.label}
+              <TranslatedText
+                text={item.label}
+                cacheKey={`account-sidebar:${item.label}`}
+              />
             </Link>
           )
         })}
@@ -67,7 +71,10 @@ export function AccountSidebar() {
           className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-destructive transition-all hover:bg-destructive/10"
         >
           <LogOut className="h-5 w-5" />
-          Log out
+          <TranslatedText
+            text="Log out"
+            cacheKey="account-sidebar:logout"
+          />
         </button>
       </div>
     </aside>

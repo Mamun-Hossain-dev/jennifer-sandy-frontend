@@ -6,6 +6,7 @@ import { ArrowLeft, Home } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 export function NotFoundContent() {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -87,11 +88,17 @@ export function NotFoundContent() {
         </div>
 
         <h2 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-slate-800 font-serif">
-          It seems this tour took a wrong turn
+          <TranslatedText
+            text="It seems this tour took a wrong turn"
+            cacheKey="notfound:title"
+          />
         </h2>
 
         <p className="mb-8 text-[15px] sm:text-[16px] text-slate-500 max-w-md leading-relaxed">
-          {`The property, tour, or page you are looking for doesn't exist or has been relocated to another address.`}
+          <TranslatedText
+            text="The property, tour, or page you are looking for doesn't exist or has been relocated to another address."
+            cacheKey="notfound:body"
+          />
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center justify-center">
@@ -108,9 +115,12 @@ export function NotFoundContent() {
               transition:
                 'transform 0.4s cubic-bezier(0.1, 0.8, 0.2, 1), background-color 0.2s ease',
             }}
-          >
+            >
             <Home className="w-4 h-4" />
-            Back to Home
+            <TranslatedText
+              text="Back to Home"
+              cacheKey="notfound:home"
+            />
           </Link>
 
           <button
@@ -128,7 +138,7 @@ export function NotFoundContent() {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Go Back
+            <TranslatedText text="Go Back" cacheKey="notfound:back" />
           </button>
         </div>
       </div>

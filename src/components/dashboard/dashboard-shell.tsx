@@ -24,28 +24,39 @@ import {
   DashboardSidebarSkeleton,
 } from '@/components/dashboard/dashboard-states'
 import type { UserProfile } from '@/types/dashboard'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 type NavItem = {
   href: string
   label: string
+  cacheKey: string
   icon: ComponentType<{ className?: string }>
 }
 
 const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  {
+    href: '/dashboard',
+    label: 'Overview',
+    cacheKey: 'dashboard:nav:overview',
+    icon: LayoutDashboard,
+  },
   {
     href: '/dashboard/inquiries',
     label: 'Inquiries',
+    cacheKey: 'dashboard:nav:inquiries',
     icon: Mail,
   },
   {
     href: '/dashboard/settings/profile',
     label: 'Profile',
+    cacheKey: 'dashboard:nav:profile',
     icon: UserRound,
   },
   {
     href: '/dashboard/settings/password',
     label: 'Security',
+    cacheKey: 'dashboard:nav:security',
     icon: Shield,
   },
 ]
@@ -114,6 +125,7 @@ function ProfileAvatar({ src, alt }: { src?: string; alt: string }) {
 function NavPill({
   href,
   label,
+  cacheKey,
   icon: Icon,
   active,
 }: NavItem & { active: boolean }) {
@@ -128,7 +140,7 @@ function NavPill({
       )}
     >
       <Icon className="h-4 w-4" />
-      {label}
+      <TranslatedText text={label} cacheKey={cacheKey} />
     </Link>
   )
 }
@@ -159,6 +171,23 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     session?.user?.name ||
     'Account'
   const displayRole = profile?.role || session?.user?.role || 'member'
+  const signedInLabel = 'Signed in'
+  const emailLabel = 'Email'
+  const locationLabel = 'Location'
+  const accountLabel = 'Account'
+  const accountCenterLabel = 'Account Center'
+  const signOutLabel = 'Sign out'
+  const logoutLabel = 'Logout'
+  const profileUnavailableTitle = useTranslatedText(
+    'Profile unavailable',
+    'en',
+    { cacheKey: 'dashboard:error:title' },
+  )
+  const unableLoadProfileMessage = useTranslatedText(
+    'Unable to load your profile.',
+    'en',
+    { cacheKey: 'dashboard:error:message' },
+  )
 
   const shellFallback = (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(22,114,230,0.12),_transparent_35%),linear-gradient(180deg,#f7fbff_0%,#f4f7fb_100%)] px-4 py-4 lg:px-6">
@@ -208,11 +237,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               <DashboardSidebarSkeleton />
             ) : isError ? (
               <DashboardErrorState
-                title="Profile unavailable"
+                title={profileUnavailableTitle}
                 message={
-                  error instanceof Error
-                    ? error.message
-                    : 'Unable to load your profile.'
+                  error instanceof Error ? error.message : unableLoadProfileMessage
                 }
                 onRetry={() => refetch()}
               />
@@ -230,9 +257,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     />
                   </div>
                   <div className="min-w-0 flex-1 pb-1">
-                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-500">
-                      Signed in
-                    </p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-500">
+                    <TranslatedText
+                      text={signedInLabel}
+                      cacheKey="dashboard:signed-in"
+                    />
+                  </p>
                     <h2 className="mt-2 truncate text-xl font-bold text-slate-900">
                       {displayName}
                     </h2>
@@ -244,7 +274,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   <div className="rounded-2xl bg-slate-50 p-3">
                     <div className="flex items-center gap-2 text-slate-500">
                       <Mail className="h-4 w-4" />
-                      Email
+                      <TranslatedText
+                        text={emailLabel}
+                        cacheKey="dashboard:email"
+                      />
                     </div>
                     <p className="mt-2 truncate font-medium text-slate-900">
                       {profile?.email || session?.user?.email || 'N/A'}
@@ -253,7 +286,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   <div className="rounded-2xl bg-slate-50 p-3">
                     <div className="flex items-center gap-2 text-slate-500">
                       <MapPin className="h-4 w-4" />
-                      Location
+                      <TranslatedText
+                        text={locationLabel}
+                        cacheKey="dashboard:location"
+                      />
                     </div>
                     <p className="mt-2 truncate font-medium text-slate-900">
                       {profile?.location || profile?.streetAddress || 'Not set'}
@@ -288,11 +324,16 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
                 <div className="mt-6 rounded-3xl bg-gradient-to-br from-sky-500 to-blue-600 p-4 text-white shadow-lg">
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/80">
-                    Account
+                    <TranslatedText
+                      text={accountLabel}
+                      cacheKey="dashboard:account"
+                    />
                   </p>
                   <p className="mt-2 text-sm leading-6 text-white/90">
-                    Keep your details current so the dashboard stays in sync
-                    with your backend profile.
+                    <TranslatedText
+                      text="Keep your details current so the dashboard stays in sync with your backend profile."
+                      cacheKey="dashboard:profile-sync"
+                    />
                   </p>
                 </div>
 
@@ -303,7 +344,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   onClick={() => signOut({ callbackUrl: '/login' })}
                 >
                   <LogOut className="h-4 w-4" />
-                  Sign out
+                  <TranslatedText
+                    text={signOutLabel}
+                    cacheKey="dashboard:sign-out"
+                  />
                 </Button>
               </div>
             )}
@@ -315,13 +359,22 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-500">
-                  Account Center
+                  <TranslatedText
+                    text={accountCenterLabel}
+                    cacheKey="dashboard:center"
+                  />
                 </p>
                 <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                  {meta.title}
+                  <TranslatedText
+                    text={meta.title}
+                    cacheKey={`dashboard:meta:title:${pathname}`}
+                  />
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                  {meta.description}
+                  <TranslatedText
+                    text={meta.description}
+                    cacheKey={`dashboard:meta:desc:${pathname}`}
+                  />
                 </p>
               </div>
 
@@ -341,7 +394,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   onClick={() => signOut({ callbackUrl: '/login' })}
                 >
                   <LogOut className="h-4 w-4" />
-                  Sign out
+                  <TranslatedText
+                    text={signOutLabel}
+                    cacheKey="dashboard:sign-out-2"
+                  />
                 </Button>
               </div>
             </div>
@@ -358,6 +414,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     key={item.href}
                     href={item.href}
                     label={item.label}
+                    cacheKey={item.cacheKey}
                     icon={item.icon}
                     active={active}
                   />
@@ -370,7 +427,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 onClick={() => signOut({ callbackUrl: '/login' })}
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                <TranslatedText
+                  text={logoutLabel}
+                  cacheKey="dashboard:logout"
+                />
               </Button>
             </div>
           </div>

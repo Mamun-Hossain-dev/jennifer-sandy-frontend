@@ -7,10 +7,11 @@ import { SiteHeader } from '@/components/shared/site-header'
 import { SiteFooter } from '@/components/shared/site-footer'
 import { Toaster } from '@/components/ui/sonner'
 import { ShellWrapper } from '@/components/shared/shell-wrapper'
+import { LanguageSync } from '@/components/shared/language-sync'
 
 export const metadata: Metadata = {
-  title: 'Next.js Boilerplate',
-  description: 'A Next.js boilerplate project',
+  title: '0211wohnen',
+  description: '0211wohnen apartment and landlord platform',
 }
 
 export default function RootLayout({
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className={cn('min-h-screen bg-background font-sans antialiased')}>
         <AuthProvider>
           <AppProvider>
+            <LanguageSync />
             <ShellWrapper header={<SiteHeader />} footer={<SiteFooter />}>
               <main>{children}</main>
             </ShellWrapper>

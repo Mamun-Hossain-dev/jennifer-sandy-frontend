@@ -9,6 +9,8 @@ import { useMutation } from '@tanstack/react-query'
 
 import { submitContact, type ContactPayload } from '@/lib/contact-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const contactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -24,6 +26,11 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>
 
 export function ContactForm() {
+  const successMessage = useTranslatedText(
+    'Message sent successfully!',
+    'en',
+    { cacheKey: 'contact:toast:success' },
+  )
   const submitMutation = useMutation({
     mutationFn: (data: ContactPayload) => submitContact(data),
   })
@@ -46,7 +53,7 @@ export function ContactForm() {
         message: data.message,
       })
 
-      toast.success('Message sent successfully!')
+      toast.success(successMessage)
       reset()
     } catch (error) {
       toast.error(
@@ -60,7 +67,10 @@ export function ContactForm() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            First Name
+            <TranslatedText
+              text="First Name"
+              cacheKey="contact:first-name"
+            />
           </label>
           <input
             {...register('firstName')}
@@ -76,7 +86,7 @@ export function ContactForm() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Last Name
+            <TranslatedText text="Last Name" cacheKey="contact:last-name" />
           </label>
           <input
             {...register('lastName')}
@@ -93,7 +103,7 @@ export function ContactForm() {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Email Address
+          <TranslatedText text="Email Address" cacheKey="contact:email" />
         </label>
         <input
           {...register('email')}
@@ -108,7 +118,7 @@ export function ContactForm() {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Phone Number
+          <TranslatedText text="Phone Number" cacheKey="contact:phone" />
         </label>
         <input
           {...register('phone')}
@@ -123,7 +133,7 @@ export function ContactForm() {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Message
+          <TranslatedText text="Message" cacheKey="contact:message" />
         </label>
         <textarea
           {...register('message')}
@@ -143,14 +153,20 @@ export function ContactForm() {
           id="agreed"
           className="mt-1 h-4 w-4 rounded border-gray-300 text-[#1672E6] focus:ring-[#1672E6]"
         />
-        <label htmlFor="agreed" className="text-sm text-gray-600">
-          You agree to our friendly{' '}
+          <label htmlFor="agreed" className="text-sm text-gray-600">
+          <TranslatedText text="You agree to our friendly" cacheKey="contact:agree" />{' '}
           <a href="/terms" className="text-[#1672E6] hover:underline">
-            Terms & Conditions
+            <TranslatedText
+              text="Terms & Conditions"
+              cacheKey="contact:terms"
+            />
           </a>{' '}
-          and{' '}
+          <TranslatedText text="and" cacheKey="contact:and" />{' '}
           <a href="/privacy" className="text-[#1672E6] hover:underline">
-            Privacy Policy
+            <TranslatedText
+              text="Privacy Policy"
+              cacheKey="contact:privacy"
+            />
           </a>
           .
         </label>
@@ -164,7 +180,11 @@ export function ContactForm() {
         disabled={submitMutation.isPending}
         className="w-full bg-[#1672E6] hover:bg-[#125bbf] disabled:opacity-60 text-white font-medium py-2.5 rounded-md transition-colors text-sm flex items-center justify-center gap-2"
       >
-        {submitMutation.isPending ? 'Sending...' : 'Send Message'}
+        {submitMutation.isPending ? (
+          <TranslatedText text="Sending..." cacheKey="contact:sending" />
+        ) : (
+          <TranslatedText text="Send Message" cacheKey="contact:send" />
+        )}
       </button>
     </form>
   )
@@ -197,12 +217,16 @@ export function ContactInfo() {
   return (
     <div className="mt-16 md:mt-0">
       <h2 className="text-2xl font-semibold text-[#1672E6] mb-2">
-        Contact Information
+        <TranslatedText
+          text="Contact Information"
+          cacheKey="contact:info:title"
+        />
       </h2>
       <p className="text-gray-600 text-sm mb-6">
-        Find all the ways to reach us, including email, phone, and our office
-        address, so you can get the support and answers you need quickly and
-        easily.
+        <TranslatedText
+          text="Find all the ways to reach us, including email, phone, and our office address, so you can get the support and answers you need quickly and easily."
+          cacheKey="contact:info:subtitle"
+        />
       </p>
 
       <ul className="space-y-4">
@@ -214,10 +238,18 @@ export function ContactInfo() {
                 href={item.href}
                 className="text-sm text-gray-700 hover:text-[#1672E6] transition-colors"
               >
-                {item.value}
+                <TranslatedText
+                  text={item.value}
+                  cacheKey={`contact:info:${item.value}`}
+                />
               </a>
             ) : (
-              <span className="text-sm text-gray-700">{item.value}</span>
+              <span className="text-sm text-gray-700">
+                <TranslatedText
+                  text={item.value}
+                  cacheKey={`contact:info:${item.value}`}
+                />
+              </span>
             )}
           </li>
         ))}

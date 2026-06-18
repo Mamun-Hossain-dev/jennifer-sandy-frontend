@@ -15,6 +15,8 @@ import { AuthLayout } from '@/components/shared/AuthLayout'
 import { Button } from '@/components/ui/button'
 import { sendForgotPasswordOtp, verifyOtp } from '@/lib/auth-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 export function VerifyOtpContent() {
   const router = useRouter()
@@ -22,6 +24,31 @@ export function VerifyOtpContent() {
   const email = searchParams.get('email') || ''
   const type = searchParams.get('type') || 'forgot'
   const displayEmail = email || 'your email address'
+  const invalidCodeMessage = useTranslatedText(
+    'Please paste a valid 6-digit verification code',
+    'en',
+    { cacheKey: 'verify:toast:invalid-paste' },
+  )
+  const missingEmailMessage = useTranslatedText(
+    'Missing email address. Please restart the password reset flow.',
+    'en',
+    { cacheKey: 'verify:toast:missing-email' },
+  )
+  const resendSuccessMessage = useTranslatedText(
+    'A new verification code has been sent!',
+    'en',
+    { cacheKey: 'verify:toast:resend-success' },
+  )
+  const signupVerifiedMessage = useTranslatedText(
+    'Email verified successfully! You can now log in.',
+    'en',
+    { cacheKey: 'verify:toast:signup-success' },
+  )
+  const passwordVerifiedMessage = useTranslatedText(
+    'Email verified successfully! You can now reset/change your password.',
+    'en',
+    { cacheKey: 'verify:toast:password-success' },
+  )
 
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', ''])
   const [resendTimer, setResendTimer] = useState(59)
@@ -88,7 +115,7 @@ export function VerifyOtpContent() {
     e.preventDefault()
     const pastedData = e.clipboardData.getData('text').trim()
     if (!/^\d{6}$/.test(pastedData)) {
-      toast.error('Please paste a valid 6-digit verification code')
+      toast.error(invalidCodeMessage)
       return
     }
 
@@ -99,9 +126,7 @@ export function VerifyOtpContent() {
 
   const handleResend = async () => {
     if (!email) {
-      toast.error(
-        'Missing email address. Please restart the password reset flow.',
-      )
+      toast.error(missingEmailMessage)
       router.push('/forgot-password')
       return
     }
@@ -111,7 +136,7 @@ export function VerifyOtpContent() {
     try {
       await resendMutation.mutateAsync({ email })
       setResendTimer(59)
-      toast.success('A new verification code has been sent!')
+      toast.success(resendSuccessMessage)
     } catch (error) {
       toast.error(
         getApiErrorMessage(error, 'Failed to resend verification code.'),
@@ -122,9 +147,7 @@ export function VerifyOtpContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) {
-      toast.error(
-        'Missing email address. Please restart the password reset flow.',
-      )
+      toast.error(missingEmailMessage)
       router.push('/forgot-password')
       return
     }
@@ -139,12 +162,10 @@ export function VerifyOtpContent() {
     try {
       await verifyMutation.mutateAsync({ email, otp: code })
       if (type === 'signup') {
-        toast.success('Email verified successfully! You can now log in.')
+        toast.success(signupVerifiedMessage)
         router.push('/login')
       } else {
-        toast.success(
-          'Email verified successfully! You can now reset/change your password.',
-        )
+        toast.success(passwordVerifiedMessage)
         router.push(`/change-password?email=${encodeURIComponent(email)}`)
       }
     } catch (error) {
@@ -159,11 +180,19 @@ export function VerifyOtpContent() {
 
   return (
     <AuthLayout
-      title="Verify Email"
-      description={`A 6-digit verification code has been sent to ${displayEmail}`}
+      title={<TranslatedText text="Verify Email" cacheKey="verify:title" />}
+      description={
+        <TranslatedText
+          text={`A 6-digit verification code has been sent to ${displayEmail}`}
+          cacheKey={`verify:desc:${displayEmail || 'email'}`}
+        />
+      }
       footer={
         <div className="text-slate-600 font-normal">
-          {"Didn't get the code? "}
+          <TranslatedText
+            text="Didn't get the code?"
+            cacheKey="verify:footer:prompt"
+          />{' '}
           <button
             type="button"
             disabled={!email || resendTimer > 0 || resendMutation.isPending}
@@ -174,7 +203,14 @@ export function VerifyOtpContent() {
                 : 'text-[#006fe6] hover:text-[#005ec4]'
             }`}
           >
-            {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend'}
+            {resendTimer > 0 ? (
+              <TranslatedText
+                text={`Resend in ${resendTimer}s`}
+                cacheKey="verify:footer:resend-timer"
+              />
+            ) : (
+              <TranslatedText text="Resend" cacheKey="verify:footer:resend" />
+            )}
           </button>
         </div>
       }
@@ -204,7 +240,11 @@ export function VerifyOtpContent() {
           disabled={verifyMutation.isPending}
           className="w-full h-11 bg-[#006fe6] hover:bg-[#005ec4] text-white font-medium rounded-lg shadow-sm hover:shadow transition-all duration-200 flex items-center justify-center gap-2"
         >
-          {verifyMutation.isPending ? 'Verifying...' : 'Verify'}
+          {verifyMutation.isPending ? (
+            <TranslatedText text="Verifying..." cacheKey="verify:loading" />
+          ) : (
+            <TranslatedText text="Verify" cacheKey="verify:submit" />
+          )}
         </Button>
       </form>
     </AuthLayout>

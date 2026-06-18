@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { changeMyPassword } from '@/lib/dashboard-api'
 import { getApiErrorMessage } from '@/lib/get-api-error-message'
+import { TranslatedText } from '@/components/shared/translated-text'
+import { useTranslatedText } from '@/hooks/use-translated-text'
 
 const changePasswordSchema = z
   .object({
@@ -38,6 +40,16 @@ export function PasswordForm() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const passwordChangedMessage = useTranslatedText(
+    'Password changed successfully',
+    'en',
+    { cacheKey: 'account:password:toast:success' },
+  )
+  const passwordUpdateFailedMessage = useTranslatedText(
+    'Password update failed',
+    'en',
+    { cacheKey: 'account:password:toast:error' },
+  )
 
   const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
@@ -55,11 +67,11 @@ export function PasswordForm() {
         newPassword: values.newPassword,
       }),
     onSuccess: response => {
-      toast.success(response.message || 'Password changed successfully')
+      toast.success(response.message || passwordChangedMessage)
       form.reset()
     },
     onError: error => {
-      toast.error(getApiErrorMessage(error, 'Password update failed'))
+      toast.error(getApiErrorMessage(error, passwordUpdateFailedMessage))
     },
   })
 
@@ -72,11 +84,16 @@ export function PasswordForm() {
     <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
       <div>
         <h4 className="text-xl font-semibold leading-[120%] text-[#343A40] md:text-2xl">
-          Changes Password
+          <TranslatedText
+            text="Change Password"
+            cacheKey="account:password:title"
+          />
         </h4>
         <p className="pt-3 text-base font-normal leading-[120%] text-[#68706A]">
-          Manage your account preferences, security settings, and privacy
-          options.
+          <TranslatedText
+            text="Manage your account preferences, security settings, and privacy options."
+            cacheKey="account:password:subtitle"
+          />
         </p>
       </div>
 
@@ -89,7 +106,10 @@ export function PasswordForm() {
                 htmlFor="currentPassword"
                 className="text-base font-medium leading-[120%] text-[#3B4759]"
               >
-                Current Password
+                <TranslatedText
+                  text="Current Password"
+                  cacheKey="account:password:current"
+                />
               </Label>
               <div className="relative">
                 <Input
@@ -124,7 +144,10 @@ export function PasswordForm() {
                 htmlFor="newPassword"
                 className="text-base font-medium leading-[120%] text-[#3B4759]"
               >
-                New Password
+                <TranslatedText
+                  text="New Password"
+                  cacheKey="account:password:new"
+                />
               </Label>
               <div className="relative">
                 <Input
@@ -159,7 +182,10 @@ export function PasswordForm() {
                 htmlFor="confirmPassword"
                 className="text-base font-medium leading-[120%] text-[#3B4759]"
               >
-                Confirm New Password
+                <TranslatedText
+                  text="Confirm New Password"
+                  cacheKey="account:password:confirm"
+                />
               </Label>
               <div className="relative">
                 <Input
@@ -196,14 +222,27 @@ export function PasswordForm() {
               onClick={() => form.reset()}
               className="h-[47px] rounded-md border border-[#E5102E] px-6 py-4 text-sm font-medium leading-[120%] text-[#E5102E]"
             >
-              Discard Changes
+              <TranslatedText
+                text="Discard Changes"
+                cacheKey="account:password:discard"
+              />
             </Button>
             <Button
               type="submit"
               disabled={changePasswordMutation.isPending}
               className="h-[47px] rounded-md bg-[#2563EB] px-6 py-4 text-sm font-medium leading-[120%] text-white hover:bg-[#1d4ed8]"
             >
-              {changePasswordMutation.isPending ? 'Sending...' : 'Save Changes'}
+              {changePasswordMutation.isPending ? (
+                <TranslatedText
+                  text="Sending..."
+                  cacheKey="account:password:sending"
+                />
+              ) : (
+                <TranslatedText
+                  text="Save Changes"
+                  cacheKey="account:password:save"
+                />
+              )}
             </Button>
           </div>
         </form>

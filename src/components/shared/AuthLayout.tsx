@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
+import { TranslatedText } from '@/components/shared/translated-text'
 
 interface AuthLayoutProps {
   children: ReactNode;
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
   backToHomeUrl?: string;
   footer?: ReactNode;
 }
@@ -45,7 +46,10 @@ export function AuthLayout({
             className="group flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
+            <TranslatedText
+              text="Back to Home"
+              cacheKey="auth:back-home"
+            />
           </Link>
         </div>
 
@@ -72,8 +76,11 @@ export function AuthLayout({
         </div>
 
         {/* Footer info/copyright */}
-        <div className="w-full text-center text-xs text-slate-400 font-normal mt-auto pt-6">
-          © {new Date().getFullYear()} ALH Hub. All rights reserved.
+          <div className="w-full text-center text-xs text-slate-400 font-normal mt-auto pt-6">
+          <TranslatedText
+            text={`© ${new Date().getFullYear()} 0211wohnen. All rights reserved.`}
+            cacheKey="auth:copyright"
+          />
         </div>
       </div>
     </div>

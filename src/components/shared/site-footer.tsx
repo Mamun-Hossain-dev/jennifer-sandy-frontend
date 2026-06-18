@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 const tenantLinks = [
   { label: 'Home', href: '/' },
@@ -31,8 +32,10 @@ export function SiteFooter() {
               0211wohnen
             </h4>
             <p className="mt-3 text-sm leading-6 text-slate-500">
-              Your trusted partner for furnished temporary accommodation in
-              Düsseldorf.
+              <TranslatedText
+                text="Your trusted partner for furnished temporary accommodation in Düsseldorf."
+                cacheKey="footer:tagline"
+              />
             </p>
             <div className="mt-4 flex items-center gap-3">
               <a
@@ -76,7 +79,7 @@ export function SiteFooter() {
 
           <div>
             <h5 className="text-sm font-semibold text-slate-700">
-              For tenants
+              <TranslatedText text="For tenants" cacheKey="footer:tenants" />
             </h5>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               {tenantLinks.map(link => (
@@ -85,7 +88,10 @@ export function SiteFooter() {
                     href={link.href}
                     className="inline-flex transition-colors duration-200 hover:text-[#1672E6] hover:underline underline-offset-4"
                   >
-                    {link.label}
+                    <TranslatedText
+                      text={link.label}
+                      cacheKey={`footer:tenant:${link.label}`}
+                    />
                   </Link>
                 </li>
               ))}
@@ -94,7 +100,10 @@ export function SiteFooter() {
 
           <div>
             <h5 className="text-sm font-semibold text-slate-700">
-              For landlords
+              <TranslatedText
+                text="For landlords"
+                cacheKey="footer:landlords"
+              />
             </h5>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               {landlordLinks.map(link => (
@@ -103,7 +112,10 @@ export function SiteFooter() {
                     href={link.href}
                     className="inline-flex transition-colors duration-200 hover:text-[#1672E6] hover:underline underline-offset-4"
                   >
-                    {link.label}
+                    <TranslatedText
+                      text={link.label}
+                      cacheKey={`footer:landlord:${link.label}`}
+                    />
                   </Link>
                 </li>
               ))}
@@ -111,7 +123,9 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h5 className="text-sm font-semibold text-slate-700">Legal</h5>
+            <h5 className="text-sm font-semibold text-slate-700">
+              <TranslatedText text="Legal" cacheKey="footer:legal" />
+            </h5>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               {legalLinks.map(link => (
                 <li key={link.label}>
@@ -119,7 +133,10 @@ export function SiteFooter() {
                     href={link.href}
                     className="inline-flex transition-colors duration-200 hover:text-[#1672E6] hover:underline underline-offset-4"
                   >
-                    {link.label}
+                    <TranslatedText
+                      text={link.label}
+                      cacheKey={`footer:legal:${link.label}`}
+                    />
                   </Link>
                 </li>
               ))}
@@ -138,7 +155,10 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-8 border-t border-[#c5ddf7] pt-3 text-xs text-slate-500">
-          © 2026 Dusseldorf. All rights reserved.
+          <TranslatedText
+            text="© 2026 Dusseldorf. All rights reserved."
+            cacheKey="footer:copyright"
+          />
         </div>
       </div>
     </footer>

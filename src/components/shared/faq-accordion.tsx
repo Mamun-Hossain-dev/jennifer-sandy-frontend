@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MinusCircle, PlusCircle } from 'lucide-react'
+import { TranslatedText } from '@/components/shared/translated-text'
 
 export interface FaqItem {
   question: string
@@ -33,8 +34,15 @@ export function FaqAccordion({
     <div className={containerClass}>
       {showHeader && (
         <div className="text-center mb-10">
-          <h2 className="section-title text-[#1672E6] mb-2">{title}</h2>
-          <p className="section-desc text-slate-500">{subtitle}</p>
+          <h2 className="section-title text-[#1672E6] mb-2">
+            <TranslatedText text={title} cacheKey={`faq:title:${title}`} />
+          </h2>
+          <p className="section-desc text-slate-500">
+            <TranslatedText
+              text={subtitle}
+              cacheKey={`faq:subtitle:${subtitle}`}
+            />
+          </p>
         </div>
       )}
 
@@ -49,7 +57,12 @@ export function FaqAccordion({
                 onClick={() => toggleFaq(index)}
                 className="flex w-full items-center justify-between gap-4 text-left focus:outline-none"
               >
-                <h3 className="text-[20px] text-slate-700">{item.question}</h3>
+                <h3 className="text-[20px] text-slate-700">
+                  <TranslatedText
+                    text={item.question}
+                    cacheKey={`faq:q:${item.question}`}
+                  />
+                </h3>
                 {isOpen ? (
                   <MinusCircle className="h-5 w-5 shrink-0 text-[#1672E6]" />
                 ) : (
@@ -58,7 +71,12 @@ export function FaqAccordion({
               </button>
               {isOpen && item.answer && (
                 <div className="mt-2 pr-10">
-                  <p className="section-desc text-slate-500">{item.answer}</p>
+                  <p className="section-desc text-slate-500">
+                    <TranslatedText
+                      text={item.answer}
+                      cacheKey={`faq:a:${item.question}`}
+                    />
+                  </p>
                 </div>
               )}
             </div>
