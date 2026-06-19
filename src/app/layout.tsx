@@ -12,6 +12,9 @@ import { LanguageSync } from '@/components/shared/language-sync'
 export const metadata: Metadata = {
   title: '0211wohnen',
   description: '0211wohnen apartment and landlord platform',
+  icons: {
+    icon: [{ url: '/Fab%20icon.svg', type: 'image/svg+xml' }],
+  },
 }
 
 export default function RootLayout({
