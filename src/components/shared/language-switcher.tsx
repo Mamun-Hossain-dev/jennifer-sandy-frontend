@@ -1,34 +1,48 @@
 'use client'
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { type SiteLanguage, useLanguageStore } from '@/stores/useLanguageStore'
 
-const options: SiteLanguage[] = ['de', 'en']
+const options: Array<{ value: SiteLanguage; label: string }> = [
+  { value: 'de', label: 'Deutsch' },
+  { value: 'en', label: 'English' },
+]
 
 export function LanguageSwitcher() {
   const language = useLanguageStore(state => state.language)
   const setLanguage = useLanguageStore(state => state.setLanguage)
 
   return (
-    <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 shadow-sm">
-      {options.map(option => {
-        const isActive = language === option
-
-        return (
-          <button
-            key={option}
-            type="button"
-            onClick={() => setLanguage(option)}
-            className={`rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase leading-none transition-colors ${
-              isActive
-                ? 'bg-[#1672E6] text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-            aria-pressed={isActive}
+    <Select
+      value={language}
+      onValueChange={value => {
+        if (value) {
+          setLanguage(value)
+        }
+      }}
+    >
+      <SelectTrigger className="h-10 min-w-28 cursor-pointer rounded-xl border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100 md:min-w-32">
+        <SelectValue>
+          {value => options.find(option => option.value === value)?.label ?? 'Language'}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent sideOffset={12} className="min-w-32">
+        {options.map(option => (
+          <SelectItem
+            key={option.value}
+            value={option.value}
+            className="cursor-pointer data-[selected]:bg-primary/10 data-[selected]:text-slate-700 data-[selected]:font-semibold data-[highlighted]:bg-primary/15 data-[highlighted]:text-slate-700"
           >
-            {option}
-          </button>
-        )
-      })}
-    </div>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
