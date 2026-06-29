@@ -55,7 +55,7 @@ export function AboutSections() {
           />
           <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white sm:px-8">
-            <h1 className="banner-title">
+            <h1 className="banner-title about-hero-title">
               <TranslatedText
                 text="Connecting Families with Trusted Facilities"
                 cacheKey="about:hero:title"
@@ -103,19 +103,19 @@ export function AboutSections() {
             </div>
           </div>
           <div className="space-y-4">
-            <h2 className="section-title text-[#1672E6]">
+            <h2 className="font-serif text-[24px] font-bold leading-[1.15] text-[#1672E6] sm:text-[30px]">
               <TranslatedText
                 text="Connecting People with Comfortable, Fully Furnished Homes"
                 cacheKey="about:section1:title"
               />
             </h2>
-            <p className="section-desc text-slate-600">
+            <p className="text-[14px] leading-[1.65] text-slate-600 sm:text-[15px]">
               <TranslatedText
                 text="At our platform, our mission is to simplify the search for high quality furnished apartments by connecting tenants directly with trusted landlords and professionally managed properties. We believe every renter deserves clarity, reliability, and straightforward access to homes that match their needs without unnecessary complications or hidden processes. By reducing barriers and streamlining communication, we make finding a temporary home faster, easier, and more transparent, giving tenants the confidence to choose the right place for their stay."
                 cacheKey="about:section1:body1"
               />
             </p>
-            <p className="section-desc text-slate-600">
+            <p className="text-[14px] leading-[1.65] text-slate-600 sm:text-[15px]">
               <TranslatedText
                 text="For landlords, our platform creates the opportunity to present their apartments in a professional and structured way while reaching the right audience efficiently. We provide the tools to showcase property details, highlight amenities, manage availability, and respond to inquiries with ease. Our goal is to build a space where the right tenants and the right properties connect seamlessly, ensuring comfortable living experiences and well managed rentals at the right place and the right time."
                 cacheKey="about:section1:body2"
@@ -128,25 +128,25 @@ export function AboutSections() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-10">
         <div className="grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
           <div className="space-y-4">
-            <h2 className="section-title text-[#1672E6]">
+            <h2 className="font-serif text-[24px] font-bold leading-[1.15] text-[#1672E6] sm:text-[30px]">
               <TranslatedText
                 text="Personal, Professional and Service-Oriented!"
                 cacheKey="about:section2:title"
               />
             </h2>
-            <p className="section-desc text-slate-600">
+            <p className="text-[14px] leading-[1.65] text-slate-600 sm:text-[15px]">
               <TranslatedText
                 text="We are a family-run and owner-managed company specializing in the rental of furnished designer apartments in and around Dusseldorf. The properties we offer are mostly from our own portfolio, therefore we pay meticulous attention to an exclusive and consistent standard of living."
                 cacheKey="about:section2:body1"
               />
             </p>
-            <p className="section-desc text-slate-600">
+            <p className="text-[14px] leading-[1.65] text-slate-600 sm:text-[15px]">
               <TranslatedText
                 text="In addition to our own properties, we are happy to make our rental platform available to selected external clients who share our attention to detail and our design standards . It is important that our standards are met! Having been active in real estate market for many years, we have an excellent network of companies, real estate agents, and relocation specialists . Thanks to the quality we offer and our exceptional service, we gain new partners every day."
                 cacheKey="about:section2:body2"
               />
             </p>
-            <p className="section-desc text-slate-600">
+            <p className="text-[14px] leading-[1.65] text-slate-600 sm:text-[15px]">
               <TranslatedText
                 text="The 0211wohnen team consists of capable real estate specialists who use their respective strengths with passion and dedication in their respective areas of responsibility every day."
                 cacheKey="about:section2:body3"
@@ -166,13 +166,13 @@ export function AboutSections() {
       </section>
 
       <section className="container mx-auto px-4 sm:px-6 lg:px-10">
-        <h2 className="section-title text-center text-[#1672E6]">
+        <h2 className="font-serif text-[24px] font-bold leading-[1.15] text-center text-[#1672E6] sm:text-[30px]">
           <TranslatedText
             text="Why We Started"
             cacheKey="about:section3:title"
           />
         </h2>
-        <p className="section-desc mt-2 text-center text-slate-500">
+        <p className="mt-2 text-center text-[14px] leading-[1.65] text-slate-500 sm:text-[15px]">
           <TranslatedText
             text="Created with a vision to make finding the right home simple, transparent, and reliable"
             cacheKey="about:section3:subtitle"
@@ -206,13 +206,13 @@ export function AboutSections() {
       </section>
 
       <section className="container mx-auto px-4 pb-16 sm:px-6 lg:px-10">
-        <h2 className="section-title text-[#1672E6]">
+        <h2 className="font-serif text-[24px] font-bold leading-[1.15] text-[#1672E6] sm:text-[30px]">
           <TranslatedText
             text="Meet Our Team"
             cacheKey="about:team:title"
           />
         </h2>
-        <p className="section-desc text-slate-500">
+        <p className="text-[14px] leading-[1.65] text-slate-500 sm:text-[15px]">
           <TranslatedText
             text="Created with a vision to make finding the right home simple, transparent, and reliable."
             cacheKey="about:team:subtitle"
@@ -221,26 +221,26 @@ export function AboutSections() {
         <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
           {teamMembers.map(member => (
             <article key={member.name} className="flex h-full min-h-[360px] flex-col text-center">
-              <div className="mx-auto w-[235px] rounded-[46%_54%_41%_59%/51%_45%_55%_49%] bg-[#0F7EFF] p-2 sm:w-[270px]">
+              <div className="mx-auto w-[225px] rounded-[46%_54%_41%_59%/51%_45%_55%_49%] bg-[#0F7EFF] p-2 sm:w-[250px]">
                 <Image
                   src="/images/team-1.png"
                   alt={member.name}
                   width={255}
                   height={180}
-                  className="h-[172px] w-full rounded-[44%_56%_40%_60%/54%_46%_54%_46%] object-cover sm:h-[186px]"
+                  className="h-[162px] w-full rounded-[44%_56%_40%_60%/54%_46%_54%_46%] object-cover sm:h-[176px]"
                 />
               </div>
-              <p className="mt-5 text-[13px] text-slate-500">
+              <p className="mt-5 text-[12px] text-slate-500">
                 <TranslatedText
                   text={member.role}
                   cacheKey={`about:role:${member.role}`}
                 />
               </p>
-              <h3 className="mt-1 font-serif text-[21px] leading-[130%] text-slate-800">
+              <h3 className="mt-1 font-serif text-[19px] leading-[130%] text-slate-800">
                 {member.name}
               </h3>
-              <p className="mt-2 text-[13px] text-slate-500">{member.phone}</p>
-              <p className="text-[13px] text-[#1672E6]">{member.email}</p>
+              <p className="mt-2 text-[12px] text-slate-500">{member.phone}</p>
+              <p className="text-[12px] text-[#1672E6]">{member.email}</p>
             </article>
           ))}
         </div>

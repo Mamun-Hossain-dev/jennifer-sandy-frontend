@@ -43,7 +43,7 @@ export function BlogsPageContent() {
             />
             <div className="absolute inset-0 bg-black/50" />
             <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white sm:px-8">
-              <h1 className="banner-title">
+              <h1 className="banner-title blogs-hero-title">
                 <TranslatedText
                   text="Insights, Tips & Guidance for Families"
                   cacheKey="blogs:hero:title"
@@ -88,7 +88,7 @@ export function BlogsPageContent() {
             />
             <div className="absolute inset-0 bg-black/50" />
             <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white sm:px-8">
-              <h1 className="banner-title">
+              <h1 className="banner-title blogs-hero-title">
                 Insights, Tips & Guidance for Families
               </h1>
               <p className="banner-desc mt-2 max-w-5xl text-white/90">
@@ -130,7 +130,7 @@ export function BlogsPageContent() {
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white sm:px-8">
-            <h1 className="banner-title">
+            <h1 className="banner-title blogs-hero-title">
               <TranslatedText
                 text="Insights, Tips & Guidance for Families"
                 cacheKey="blogs:hero:title"
@@ -147,7 +147,7 @@ export function BlogsPageContent() {
       </section>
 
       <section className="container mx-auto px-4 sm:px-6 lg:px-10">
-        <h2 className="section-title text-slate-800">
+        <h2 className="font-serif text-[24px] font-bold leading-[1.15] text-slate-800 sm:text-[30px]">
           <TranslatedText
             text="Recent blog posts"
             cacheKey="blogs:section:title"
@@ -183,13 +183,13 @@ export function BlogsPageContent() {
                       cacheKey={`blogs:category:${featured.category || 'Guide'}`}
                     />
                   </span>
-                  <h3 className="mt-4 font-serif text-[28px] leading-[130%] sm:text-[42px]">
+                  <h3 className="mt-4 font-serif text-[22px] leading-[130%] sm:text-[32px]">
                     <TranslatedText
                       text={featured.title}
                       cacheKey={`blogs:title:${featured._id}`}
                     />
                   </h3>
-                  <p className="mt-2 text-sm text-white/90">
+                  <p className="mt-2 text-[13px] leading-[1.6] text-white/90 sm:text-sm">
                     <TranslatedText
                       text={stripHtml(featured.excerpt)}
                       cacheKey={`blogs:excerpt:${featured._id}`}
@@ -223,7 +223,7 @@ export function BlogsPageContent() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-[18px] leading-[140%] text-slate-800">
+                    <h3 className="text-[16px] leading-[140%] text-slate-800">
                       <TranslatedText
                         text={post.title}
                         cacheKey={`blogs:title:${post._id}`}
@@ -242,12 +242,12 @@ export function BlogsPageContent() {
 
             {/* Categories */}
             <aside className="border-l border-slate-200 pl-4">
-              <h3 className="text-[24px] font-medium text-slate-800 sm:text-[30px]">
+              <h3 className="text-[22px] font-medium text-slate-800 sm:text-[26px]">
                 <TranslatedText text="Categories" cacheKey="blogs:categories" />
               </h3>
               <ul className="mt-3 space-y-2">
                 {categories.map(cat => (
-                  <li key={cat} className="text-[16px] text-slate-500">
+                  <li key={cat} className="text-[14px] text-slate-500">
                     {cat}
                   </li>
                 ))}

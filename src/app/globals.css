@@ -19,6 +19,25 @@
     text-align: center;
   }
 
+  .about-hero-title {
+    font-size: clamp(2rem, 6vw, 4.5rem);
+  }
+
+  .blogs-hero-title {
+    font-size: clamp(2rem, 6vw, 4.5rem);
+  }
+
+  @media (min-width: 1024px) {
+    .about-hero-title {
+      font-size: clamp(1.55rem, 2vw, 2.5rem);
+      line-height: 1.03;
+    }
+
+    .blogs-hero-title {
+      font-size: clamp(1.75rem, 2.3vw, 2.75rem);
+    }
+  }
+
   .banner-desc {
     font-family: var(--font-sans);
     font-weight: 400;
