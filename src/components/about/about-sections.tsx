@@ -220,27 +220,27 @@ export function AboutSections() {
         </p>
         <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
           {teamMembers.map(member => (
-            <article key={member.name} className="text-center">
-              <div className="mx-auto w-[220px] rounded-[46%_54%_41%_59%/51%_45%_55%_49%] bg-[#0F7EFF] p-2 sm:w-[255px]">
+            <article key={member.name} className="flex h-full min-h-[360px] flex-col text-center">
+              <div className="mx-auto w-[235px] rounded-[46%_54%_41%_59%/51%_45%_55%_49%] bg-[#0F7EFF] p-2 sm:w-[270px]">
                 <Image
                   src="/images/team-1.png"
                   alt={member.name}
                   width={255}
                   height={180}
-                  className="h-[160px] w-full rounded-[44%_56%_40%_60%/54%_46%_54%_46%] object-cover sm:h-[178px]"
+                  className="h-[172px] w-full rounded-[44%_56%_40%_60%/54%_46%_54%_46%] object-cover sm:h-[186px]"
                 />
               </div>
-              <p className="mt-5 text-[14px] text-slate-500">
+              <p className="mt-5 text-[13px] text-slate-500">
                 <TranslatedText
                   text={member.role}
                   cacheKey={`about:role:${member.role}`}
                 />
               </p>
-              <h3 className="mt-1 font-serif text-[24px] leading-[130%] text-slate-800">
+              <h3 className="mt-1 font-serif text-[21px] leading-[130%] text-slate-800">
                 {member.name}
               </h3>
-              <p className="mt-2 text-[14px] text-slate-500">{member.phone}</p>
-              <p className="text-[14px] text-[#1672E6]">{member.email}</p>
+              <p className="mt-2 text-[13px] text-slate-500">{member.phone}</p>
+              <p className="text-[13px] text-[#1672E6]">{member.email}</p>
             </article>
           ))}
         </div>

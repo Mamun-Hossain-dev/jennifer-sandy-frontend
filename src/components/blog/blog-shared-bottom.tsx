@@ -69,7 +69,7 @@ export function BlogSharedBottom({ blogs }: BlogSharedBottomProps) {
               key={post._id}
               className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)]"
             >
-              <div className="relative h-[150px] w-full">
+              <div className="relative h-[168px] w-full">
                 <Image
                   src={post.thumbnail || '/images/blog.jpg'}
                   alt={post.title}
@@ -77,19 +77,19 @@ export function BlogSharedBottom({ blogs }: BlogSharedBottomProps) {
                   className="object-cover"
                 />
               </div>
-              <div className="p-4">
+              <div className="p-5">
                 <Link
                   href={`/blogs/${post.slug}`}
-                  className="text-[17px] font-medium leading-[145%] text-slate-800 hover:text-primary"
+                  className="text-[16px] font-medium leading-[145%] text-slate-800 hover:text-primary"
                 >
                   {post.title}
                 </Link>
-                <p className="mt-2 text-[15px] leading-[150%] text-slate-500 line-clamp-2">
+                <p className="mt-2 text-[14px] leading-[150%] text-slate-500 line-clamp-2">
                   {stripHtml(post.excerpt)}
                 </p>
                 <Link
                   href={`/blogs/${post.slug}`}
-                  className="mt-2 block text-[15px] font-semibold text-primary"
+                  className="mt-2 block text-[14px] font-semibold text-primary"
                 >
                   <TranslatedText text="Read More" cacheKey="blogs:read-more" />
                 </Link>

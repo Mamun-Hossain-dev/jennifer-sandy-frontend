@@ -11,6 +11,8 @@ import { stripHtml } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TranslatedText } from '@/components/shared/translated-text'
 
+const EMPTY_BLOGS: BlogPost[] = []
+
 export function BlogsPageContent() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['public-blogs', 1],
@@ -18,7 +20,7 @@ export function BlogsPageContent() {
     staleTime: 1000 * 60 * 5,
   })
 
-  const blogs: BlogPost[] = data?.data || []
+  const blogs: BlogPost[] = data?.data ?? EMPTY_BLOGS
   const featured = blogs[0]
   const sidePosts = blogs.slice(1, 4)
   const categories = useMemo(() => {
@@ -210,9 +212,9 @@ export function BlogsPageContent() {
                 <Link
                   key={post._id}
                   href={`/blogs/${post.slug}`}
-                  className="grid grid-cols-[110px_1fr] gap-3 py-3 first:pt-0"
+                  className="grid grid-cols-[124px_1fr] gap-4 py-4 first:pt-0"
                 >
-                  <div className="relative h-[96px] overflow-hidden rounded-md sm:h-[110px]">
+                  <div className="relative h-[112px] overflow-hidden rounded-md sm:h-[126px]">
                     <Image
                       src={post.thumbnail || '/images/connect-2.jpg'}
                       alt={post.title}
@@ -221,13 +223,13 @@ export function BlogsPageContent() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-[20px] leading-[145%] text-slate-800">
+                    <h3 className="text-[18px] leading-[140%] text-slate-800">
                       <TranslatedText
                         text={post.title}
                         cacheKey={`blogs:title:${post._id}`}
                       />
                     </h3>
-                    <span className="mt-3 inline-flex rounded-full bg-primary px-4 py-1 text-xs text-white">
+                    <span className="mt-2.5 inline-flex rounded-full bg-primary px-4 py-1 text-xs text-white">
                       <TranslatedText
                         text={post.category || 'General'}
                         cacheKey={`blogs:category:${post.category || 'General'}`}
@@ -240,12 +242,12 @@ export function BlogsPageContent() {
 
             {/* Categories */}
             <aside className="border-l border-slate-200 pl-4">
-              <h3 className="text-[28px] font-medium text-slate-800 sm:text-[36px]">
+              <h3 className="text-[24px] font-medium text-slate-800 sm:text-[30px]">
                 <TranslatedText text="Categories" cacheKey="blogs:categories" />
               </h3>
               <ul className="mt-3 space-y-2">
                 {categories.map(cat => (
-                  <li key={cat} className="text-[18px] text-slate-500">
+                  <li key={cat} className="text-[16px] text-slate-500">
                     {cat}
                   </li>
                 ))}
